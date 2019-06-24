@@ -13,31 +13,8 @@ const express=require('express')
 const router=express.Router()
 const TYPE_ERROR = 'error'
 const TYPE_SUCCESS = 'success'
+const verifyToken = require('./verify_token')
 
-async function verifyToken(req, res, next){
-    var token = req.headers.kouna
-    try {
-        var results = await db.query('SELECT * FROM users where token = ?', [token])
-        if (results.length == 0) {
-            res.status(401)
-                .json({
-                    type: TYPE_ERROR,
-                    message: "Not authorized",
-                    data: {}
-                })
-        } else {
-            next()
-        }
-    } catch (error) {
-        res.status(400)
-            .json({
-                type: TYPE_ERROR,
-                message: error.message,
-                data: error
-            })
-    }
-
-}
 
 //router.use(verifytoken)
 
