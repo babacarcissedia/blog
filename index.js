@@ -11,8 +11,10 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 var userRoutes = require('./routes/user.js')
 var postRoutes = require('./routes/post.js')
+var commentRoutes = require('./routes/comment.js')
 app.use('/user', userRoutes)
 app.use('/post', postRoutes)
+app.use('/comment', commentRoutes)
 
 
 app.listen(4000, function () {

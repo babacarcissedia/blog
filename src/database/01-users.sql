@@ -6,6 +6,5 @@ create table users (
     last_name varchar(30),
     email varchar(100),
     `password` varchar(255),
-    token varchar(100) null,
     constraint pk_users PRIMARY KEY (id)    
 );

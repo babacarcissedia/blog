@@ -186,9 +186,11 @@ router.put('/:id',verifyToken,async function(req,res){
 })
 
 router.delete('/:id',verifyToken,async function(req,res){
+    var user=null
     try {
-        var results = await db.query('SELECT id FROM users where id = ?', [req.params.id])
-        if (results.length == 0) {
+        var results = await db.query('SELECT * FROM users where id = ?', [req.params.id])
+        user = results[0]
+        if (!user) {
             res.status(404)
                 .json({
                     type: TYPE_ERROR,
@@ -206,8 +208,45 @@ router.delete('/:id',verifyToken,async function(req,res){
             })
         return false
     }
-    let params=[req.params.id];
-    db.query('DELETE FROM users where id=?', params)
+    // suppression posts et des commentaires de users
+       await db.query('DELETE FROM posts where user_id = ?',[user.id])
+       .then(results => {
+           res.json({
+                type:TYPE_SUCCESS,
+                message:'Post with id ' + user.id + ' deleted.',
+                data: {}
+           })
+        return false
+    })
+    .catch(error => {
+        res.status(400)
+            .json({
+            type:TYPE_ERROR,
+            message:'Error while deleting post with user_id:'+user.id + error.message,
+            data:error
+        }) 
+        return false
+ })
+
+ await db.query('DELETE FROM comments where user_id = ?',[user.id])
+       .then(results => {
+           res.json({
+                type:TYPE_SUCCESS,
+                message:'Comment with id ' + user.id + ' deleted.',
+                data: {}
+           })
+        return false
+    })
+    .catch(error => {
+        res.status(400)
+            .json({
+            type:TYPE_ERROR,
+            message:'Error while deleting comment with user_id:'+user.id + error.message,
+            data:error
+        }) 
+ })
+let params=[req.params.id];
+  db.query('DELETE FROM users where id=?', params)
         .then(results => {
             res.json({
                 type:TYPE_SUCCESS,
@@ -244,7 +283,6 @@ router.post('/login', async (req,res)=> {
             })
         return false
     }   
-
     // get auth user
     var user = null
     var params=[req.body.email, sha1(req.body.password)];
@@ -260,7 +298,6 @@ router.post('/login', async (req,res)=> {
             })
         return false
     }
-
     if (!user) {
         res.status(400)
         .json({
