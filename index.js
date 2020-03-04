@@ -8,7 +8,6 @@ var bodyParser = require("body-parser");
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-
 var userRoutes = require('./routes/user.js')
 var postRoutes = require('./routes/post.js')
 var commentRoutes = require('./routes/comment.js')
@@ -17,6 +16,6 @@ app.use('/post', postRoutes)
 app.use('/comment', commentRoutes)
 
 
-app.listen(4000, function () {
+app.listen(5000, function () {
     console.log('Blog app listening on port 4000!')
 })

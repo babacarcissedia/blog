@@ -1,2 +1,11 @@
+# dependency directories
 node_modules
+# logs
 package-lock.json
+yarn-error.log
+yarn.lock
+# dotenv environment variables file
+.env
+# next.js build output
+.idea
+dist/

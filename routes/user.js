@@ -34,8 +34,9 @@ router.get('/',verifyToken, function (req, res) {
                 data: error
             })
         })
+    res.send('Hello World')
 })
-  
+
 
 router.get('/:id',verifyToken,function (req, res) {
     db.query('SELECT * FROM users where id=?', [req.params.id])
@@ -52,7 +53,7 @@ router.get('/:id',verifyToken,function (req, res) {
                 type: TYPE_SUCCESS,
                 message: '',
                 data: results[0]
-                }) 
+                })
         })
         .catch(error => {
             res.status(400).json({
@@ -88,7 +89,7 @@ router.post('/', async function(req,res){
                     data: error
                 })
             }
-        }   
+        }
     }
     // - password is required
     if (!req.body.password) {
@@ -137,8 +138,8 @@ router.post('/', async function(req,res){
         })
     })
 })
-          
-  
+
+
 router.put('/:id',verifyToken,async function(req,res){
     try {
         var results = await db.query('SELECT id FROM users where id = ?', [req.params.id])
@@ -224,7 +225,7 @@ router.delete('/:id',verifyToken,async function(req,res){
             type:TYPE_ERROR,
             message:'Error while deleting post with user_id:'+user.id + error.message,
             data:error
-        }) 
+        })
         return false
  })
 
@@ -243,7 +244,7 @@ router.delete('/:id',verifyToken,async function(req,res){
             type:TYPE_ERROR,
             message:'Error while deleting comment with user_id:'+user.id + error.message,
             data:error
-        }) 
+        })
  })
 let params=[req.params.id];
   db.query('DELETE FROM users where id=?', params)
@@ -282,11 +283,11 @@ router.post('/login', async (req,res)=> {
                 data: errors
             })
         return false
-    }   
+    }
     // get auth user
     var user = null
     var params=[req.body.email, sha1(req.body.password)];
-    try {    
+    try {
         var results = await db.query("SELECT * FROM users WHERE email = ? AND password = ?", params)
         user = results[0]
     } catch (error) {
@@ -304,14 +305,14 @@ router.post('/login', async (req,res)=> {
             type: TYPE_ERROR,
             message: "Email and password do not match any account",
             data:errors
-        }) 
+        })
         return false
     }
-    
+
     // here user is logged in
-    // TODO: generate user token 
+    // TODO: generate user token
     user.token = sha1(Math.random() * 1000000000)
-        
+
     // save token
     try {
         await db.query("UPDATE users SET token = ? WHERE id = ? LIMIT 1", [user.token, user.id])
