@@ -1,9 +1,12 @@
 export default class AppException extends Error {
-    public statusCode:number
+    public status:number
     public message:string
-    constructor(statusCode:number, message:string) {
+    public data:any
+
+    constructor({data={}, message='', status=400}) {
         super(message);
-        this.statusCode = statusCode
-        this.message = message
+        this.data = data
+        this.status = status
+        this.message = message || 'Something went wrong'
     }
 }

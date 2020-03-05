@@ -1,8 +1,8 @@
-import AppError from "../app/AppError";
+import AppException from "./AppException";
 
-export default class PostNotFoundException extends AppError {
+export default class PostNotFoundException extends AppException {
     constructor(id:string) {
-        super(`No post found with id ${id}`, 404);
+        super({message: `No post found with id ${id}`, status: 404});
     }
 
 }

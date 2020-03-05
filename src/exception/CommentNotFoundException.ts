@@ -1,7 +1,7 @@
-import AppError from "../app/AppError";
+import AppException from "./AppException";
 
-export default class CommentNotFoundException extends AppError {
+export default class CommentNotFoundException extends AppException {
     constructor(id:string) {
-        super(`No comment found with id ${id}`, 404);
+        super({message: `No comment found with id ${id}`, status: 404});
     }
 }

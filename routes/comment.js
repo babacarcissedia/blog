@@ -12,7 +12,7 @@ const express=require('express')
 const router=express.Router()
 const TYPE_ERROR = 'error'
 const TYPE_SUCCESS = 'success'
-const verifyToken = require('./verify_token')
+const verifyToken = require('../src/routes/verify_token')
 
 router.get('/', verifyToken, function (req, res) {
     db.query('SELECT * FROM comments', [])

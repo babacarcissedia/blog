@@ -21,7 +21,6 @@ function slugify (title) {
 const verifyToken = require('./verify_token')
 
 
-
 router.post('/', async function(req,res){
 
     // title et content are required

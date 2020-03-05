@@ -1,8 +1,8 @@
-import AppError from "../app/AppError";
+import AppException from "./AppException";
 
-export default class UserNotFoundException extends AppError {
+export default class UserNotFoundException extends AppException {
     constructor(id:string) {
-        super(`No user found with id ${id}`, 404);
+        super({ message:`No user found with id ${id}`, status: 404});
     }
 
 }
