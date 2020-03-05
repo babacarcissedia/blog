@@ -5,6 +5,9 @@ import MongoHelper from "./server";
 
 const PORT = 4000
 const server = http.createServer(app)
+// main.ts
+import userRoutes from './routes/userRoutes'
+app.use('/user', userRoutes)
 server.listen(PORT,  async () => {
     console.info(`Blog app listening on ${PORT}`)
     try {

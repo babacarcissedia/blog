@@ -4,8 +4,8 @@
   "description": "A simple blog project",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -x ts-node main.ts",
-    "dev": "nodemon index.js",
+    "dev": "tsc --watch",
+    "start": "node ./dist/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -21,9 +21,11 @@
     "lodash.range": "^3.2.0",
     "mongodb-memory-server": "^6.2.4",
     "mongoose": "^5.8.10",
-    "mysql": "^2.17.1",
-    "sha1": "^1.1.1",
-    "ts-node": "^8.6.2"
+    "nodemon": "^2.0.2",
+    "standard": "^14.3.1",
+    "ts-jest": "^25.2.1",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.1",
@@ -35,10 +37,6 @@
     "@types/mongoose": "^5.7.0",
     "@types/node": "^13.5.3",
     "concurrently": "^5.1.0",
-    "jest": "^25.1.0",
-    "nodemon": "^1.19.1",
-    "standard": "^14.3.1",
-    "ts-jest": "^25.1.0",
-    "typescript": "^3.7.5"
+    "jest": "^25.1.0"
   }
 }
