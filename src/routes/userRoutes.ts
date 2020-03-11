@@ -1,5 +1,5 @@
-import express from 'express'
 import UserController from '../controller/UserController'
+import express = require('express');
 
 export default express.Router()
     .get('/', UserController.index.bind(this))

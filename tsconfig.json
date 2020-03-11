@@ -9,7 +9,7 @@
     "sourceMap": true,
     "baseUrl": "./src",
     "outDir": "./dist",
-    "noImplicityAny": false
+    "noImplicitAny": false
   },
   "include": [
     "src/**/*"

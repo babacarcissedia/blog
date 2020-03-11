@@ -6,7 +6,7 @@ export default class MongoHelper {
                 if (error) {
                     reject(error)
                 }
-            }).then(r => console.info('Connect to Mongo'))
+            }).then(() => console.info('Connect to Mongo'))
         })
     }
 }
