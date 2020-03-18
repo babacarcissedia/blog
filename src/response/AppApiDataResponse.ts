@@ -1,7 +1,7 @@
 import AppApiResponse from "./AppApiResponse"
 
 export default class AppApiDataResponse extends AppApiResponse{
-  constructor(data:any, type:string = AppApiResponse.TYPE_SUCCESS) {
-      super(data, type, '')
+  constructor({ data, type= AppApiResponse.TYPE_SUCCESS , message = ''}) {
+      super({ data, type, message })
   }
 }

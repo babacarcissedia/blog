@@ -5,20 +5,11 @@ export default class AppApiResponse {
     public static readonly TYPE_SUCCESS = 'success'
     public static readonly TYPE_ERROR = 'error'
 
-    constructor(data:any, type:string, message: string) {
+    constructor({data, type, message}) {
         this.type = type
         this.message = message
         this.data = data
     }
-     getData () {
-        return this.data
-     }
-     getType () {
-        return this.type
-     }
-     getMessage () {
-        return this.message
-     }
 
      toString () {
         return JSON.stringify({
@@ -27,12 +18,4 @@ export default class AppApiResponse {
             data: this.data
         })
      }
-
-    isSuccess (): boolean {
-        return this.type === AppApiResponse.TYPE_SUCCESS
-    }
-
-    static from (object: any): AppApiResponse {
-        return new AppApiResponse(object.data, object.type, object.message)
-    }
 }

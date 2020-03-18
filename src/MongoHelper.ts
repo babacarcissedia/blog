@@ -1,12 +1,18 @@
-import * as mongoose from 'mongoose'
+import mongoose = require("mongoose")
 export default class MongoHelper {
+
    public static connect(uri: string) {
-        return new Promise((resolve, reject) => {
-            mongoose.connect(uri, { useNewUrlParser: true,  useUnifiedTopology: true }, (error: any) => {
-                if (error) {
-                    reject(error)
-                }
-            }).then(() => console.info('Connect to Mongo'))
-        })
-    }
+       mongoose.connect(uri, { useNewUrlParser: true,  useUnifiedTopology: true, useCreateIndex: true})
+           .then(() => {
+               console.log('connected')
+           })
+           .catch(err => {
+               console.log('rejected promise: '+err)
+               mongoose.disconnect()
+           })
+       mongoose.connection.on('error', err => {
+           console.log('mongoose connection error: '+err)
+       })
+
+   }
 }
