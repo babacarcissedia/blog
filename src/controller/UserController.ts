@@ -2,14 +2,13 @@ import Controller from "./Controller"
 import { Request, Response, NextFunction } from 'express'
 import User from "../api/user/User"
 import AppApiDataResponse from "../response/AppApiDataResponse";
-import AppApiSuccessResponse from "../response/AppApiSuccessResponse";
 import UserNotFoundException from "../exception/UserNotFoundException";
 
 export default class UserController extends Controller {
   static async store(req: Request, res: Response, next: NextFunction) {
     new User(req.body)
       .save()
-      .then(user => res.json(new AppApiDataResponse({data: user})))
+      .then(user => res.json(new AppApiDataResponse({data: user, message:`User ${user.first_name} created.`})))
       .catch(error => next(error))
   }
 

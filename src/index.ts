@@ -3,6 +3,7 @@ import * as bodyparser from 'body-parser'
 import requestLoggerMiddleware from "./middleware/request.logger.middleware"
 import MongoHelper from "./MongoHelper"
 import userRoutes from './routes/userRoutes'
+import postRoutes from "./routes/postRoutes";
 import 'dotenv/config'
 
 const {DATABASE_URL, PORT=4000} = process.env
@@ -19,7 +20,7 @@ app.use(bodyparser.json())
 
 // routes
 app.use('/user', userRoutes)
-
+app.use('/post',postRoutes)
 app.listen(PORT,  async () => {
     console.info(`Blog app listening on ${PORT}`)
     try {
