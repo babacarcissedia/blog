@@ -1,8 +1,8 @@
+import NotFoundException from "../exception/NotFoundException";
 import Controller from "./Controller"
 import { Request, Response, NextFunction } from 'express'
 import User from "../api/user/User"
 import AppApiDataResponse from "../response/AppApiDataResponse";
-import UserNotFoundException from "../exception/UserNotFoundException";
 
 export default class UserController extends Controller {
   static async store(req: Request, res: Response, next: NextFunction) {
@@ -25,7 +25,7 @@ export default class UserController extends Controller {
     User.findById(id)
       .then((user: any) => {
         if (!user) {
-          throw new UserNotFoundException(id)
+          throw new NotFoundException({ message: 'User not found' })
         }
           res.json(new AppApiDataResponse({data:user}));
       })
@@ -39,7 +39,7 @@ export default class UserController extends Controller {
     User.findByIdAndUpdate(id, data, { new: false })
       .then(user => {
         if (!user) {
-          throw new UserNotFoundException(id)
+          throw new NotFoundException({ message: 'User not found' })
         }
         response.send(new AppApiDataResponse({data: user, message:`User ${user.first_name} updated.`}));
       })
@@ -52,7 +52,7 @@ export default class UserController extends Controller {
     User.findByIdAndDelete(id)
       .then(user => {
         if (!user) {
-          throw new UserNotFoundException(id)
+          throw new NotFoundException({ message: 'User not found'})
         }
         response.json(new AppApiDataResponse({data:user, message:`User ${id} deleted.`}));
       })

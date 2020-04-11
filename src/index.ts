@@ -1,34 +1,29 @@
-
-import * as bodyparser from 'body-parser'
+import 'dotenv/config'
+import { DEBUG, PORT } from "./config";
 import requestLoggerMiddleware from "./middleware/request.logger.middleware"
 import MongoHelper from "./MongoHelper"
-import userRoutes from './routes/userRoutes'
 import postRoutes from "./routes/postRoutes";
-import 'dotenv/config'
+import userRoutes from './routes/userRoutes'
+import cors from 'cors'
+import express from 'express'
+const app = express()
 
-const {DATABASE_URL, PORT=4000} = process.env
-
-const express = require('express')
-const app =  express()
-
-const DEBUG = process.env.DEBUG == 'true'
-if (DEBUG) {
-    app.use(requestLoggerMiddleware)
-}
 // middlewares
-app.use(bodyparser.json())
+app.use(express.json())
+app.use(cors())
+if (DEBUG) {
+  app.use(requestLoggerMiddleware)
+}
+
 
 // routes
 app.use('/user', userRoutes)
-app.use('/post',postRoutes)
-app.listen(PORT,  async () => {
+app.use('/post', postRoutes)
+
+
+export default async function start () {
+  await MongoHelper.connect()
+  return app.listen(PORT, async () => {
     console.info(`Blog app listening on ${PORT}`)
-    try {
-        await MongoHelper.connect(`${DATABASE_URL}`)
-    }
-    catch (e) {
-        console.error(e)
-    }
-
-
-})
+  })
+}

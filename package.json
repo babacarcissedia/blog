@@ -7,13 +7,14 @@
     "dev": "tsc --watch",
     "serve": "nodemon ./dist/index.js",
     "start": "node ./dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest -i",
+    "lint": "standard --parser typescript-eslint-parser --plugin typescript ./src/*.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.19.2",
-    "body-parser": "^1.19.0",
+    "buddy-validator": "^0.5.0",
     "cors": "^2.8.5",
     "cross-env": "^7.0.0",
     "dotenv": "^8.2.0",
@@ -21,13 +22,11 @@
     "lodash.get": "^4.4.2",
     "lodash.range": "^3.2.0",
     "mongoose": "^5.8.10",
-    "standard": "^14.3.1",
-    "ts-jest": "^25.2.1",
+    "ts-jest": "^25.3.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.3"
   },
   "devDependencies": {
-    "mongodb-memory-server": "^6.2.4",
     "@types/body-parser": "^1.17.1",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.3",
@@ -36,8 +35,15 @@
     "@types/lodash.range": "^3.2.6",
     "@types/mongoose": "^5.7.0",
     "@types/node": "^13.5.3",
+    "@types/supertest": "^2.0.8",
     "concurrently": "^5.1.0",
-    "jest": "^25.1.0",
-    "nodemon": "^2.0.2"
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^25.3.0",
+    "mongodb-memory-server": "^6.5.2",
+    "nodemon": "^2.0.2",
+    "standard": "^14.3.3",
+    "supertest": "^4.0.2",
+    "tslint-config-standard": "^9.0.0"
   }
 }

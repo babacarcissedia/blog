@@ -1,6 +1,5 @@
 # Blog MVC
 using typescript on Nodejs with ExpressJS Framework and MongoDB as Database
-
 `src/index.ts` is the entry point
 
 ## Changelog
