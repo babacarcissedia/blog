@@ -2,21 +2,48 @@
   "name": "blog",
   "version": "1.0.0",
   "description": "A simple blog project",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsc --watch",
+    "serve": "nodemon ./dist/index.js",
+    "start": "node ./dist/index.js",
+    "test": "jest -i",
+    "lint": "standard --parser typescript-eslint-parser --plugin typescript ./src/*.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "axios": "^0.19.2",
+    "buddy-validator": "^0.5.0",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "mysql": "^2.17.1",
-    "sha1": "^1.1.1"
+    "lodash.get": "^4.4.2",
+    "lodash.range": "^3.2.0",
+    "mongoose": "^5.8.10",
+    "ts-jest": "^25.3.1",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
   },
   "devDependencies": {
-    "nodemon": "^1.19.1"
+    "@types/body-parser": "^1.17.1",
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.3",
+    "@types/jest": "^25.1.1",
+    "@types/lodash.get": "^4.4.6",
+    "@types/lodash.range": "^3.2.6",
+    "@types/mongoose": "^5.7.0",
+    "@types/node": "^13.5.3",
+    "@types/supertest": "^2.0.8",
+    "concurrently": "^5.1.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^25.3.0",
+    "mongodb-memory-server": "^6.5.2",
+    "nodemon": "^2.0.2",
+    "standard": "^14.3.3",
+    "supertest": "^4.0.2",
+    "tslint-config-standard": "^9.0.0"
   }
 }
