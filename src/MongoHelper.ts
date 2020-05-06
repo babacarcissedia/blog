@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import mongoose from "mongoose"
 import { IN_TEST, MONGO_URI } from "./config";
 export default class MongoHelper {
@@ -21,9 +22,12 @@ export default class MongoHelper {
          useUnifiedTopology: true,
          useCreateIndex: true
        })
-       mongoose.connection.on('error', error => {
+      /* mongoose.connection.on('error', error => {
          reject(error)
        })
+       mongoose.connection.once('open', () => {
+         console.log(`MongoDB successfully connected to ${uri}`)
+       })*/
      })
    }
 

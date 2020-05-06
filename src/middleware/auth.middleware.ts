@@ -9,7 +9,7 @@ export default async function authMiddleware (request: Request, response: Respon
     token
   })
   if (users.length === 0) {
-    throw new AuthenticationException()
+    throw new AuthenticationException({message: 'You are not authorized'})
   }
   request.user = users[0]
   next()

@@ -1,5 +1,5 @@
 import mongoose, {Document} from 'mongoose'
-import IUser from "../api/user/IUser";
+import IPost from "../api/post/IPost";
 
 const userSchema = new mongoose.Schema({
   title: String,
@@ -8,6 +8,6 @@ const userSchema = new mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 })
 
-const userModel = mongoose.model<IUser & Document>('User', userSchema)
+const postModel = mongoose.model<IPost & Document>('Post', userSchema)
 
-export default userModel
+export default postModel

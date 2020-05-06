@@ -2,7 +2,7 @@ import Controller from './Controller'
 import * as express from 'express'
 import Post from "../api/post/Post";
 import AppApiDataResponse from "../response/AppApiDataResponse";
-import PostNotFoundException from "../exception/PostNotFoundExceprion";
+import NotFoundException from "../exception/NotFoundException";
 export default class PostController extends Controller {
     static store (req: express.Request, res:express.Response, next:express.NextFunction) {
         new Post(req.body)
@@ -22,7 +22,7 @@ export default class PostController extends Controller {
         Post.findById(id)
             .then((post: any) => {
             if(!post) {
-                throw new PostNotFoundException(id)
+                throw new NotFoundException({message: 'Post not found'})
             }
             res.json(new AppApiDataResponse(({data: post})))})
             .catch(error => next(error))
@@ -33,7 +33,7 @@ export default class PostController extends Controller {
         Post.findByIdAndUpdate(id, data, {new: false})
             .then(post => {
                 if(!post) {
-                    throw new PostNotFoundException(id)
+                    throw new NotFoundException({message: 'Post not found'})
                 }
                 res.send(new AppApiDataResponse({data: post, message: `Post ${post.title} updated.`}))
             })
@@ -45,7 +45,7 @@ export default class PostController extends Controller {
         Post.findByIdAndDelete(id)
             .then(post =>{
             if (!post) {
-                throw new PostNotFoundException(id)
+                throw new NotFoundException({message: 'Post not found'})
             }
             res.json(new AppApiDataResponse({data: post, message:`Post ${id} deleted.`}))
         })
