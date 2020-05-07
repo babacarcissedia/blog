@@ -15,13 +15,3 @@ export function isSureArray (data: any): any[] | any {
     return data
 }
 
-export function onlyOn (data: any, fields: string[]): any {
-    let dump: any = {}
-    fields.forEach((field: string) => {
-        if (field in data) {
-            dump[field] = data[field]
-        }
-    })
-    return dump
-}
-

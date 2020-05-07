@@ -2,7 +2,6 @@ import 'dotenv/config'
 import { DEBUG, PORT } from './config'
 import requestLoggerMiddleware from './middleware/request.logger.middleware'
 import MongoHelper from './MongoHelper'
-import mongoose from 'mongoose'
 import postRoutes from './routes/postRoutes'
 import userRoutes from './routes/userRoutes'
 import cors from 'cors'
@@ -20,19 +19,14 @@ if (DEBUG) {
 app.use('/user', userRoutes)
 app.use('/post', postRoutes)
 
-/*export default async function start () {
-  await MongoHelper.connect()
+export default async function start () {
   return app.listen(PORT, async () => {
     console.info(`Blog app listening on ${PORT}`)
+    try {
+      await MongoHelper.connect()
+    }catch (e) {
+      console.log(e)
+    }
   })
-}*/
-
-app.listen(PORT,  async () => {
-  console.info(`Blog app listening on ${PORT}`)
-  try {
-    await mongoose.connect(`${process.env.MONGO_URI}`, {useNewUrlParser: true, useUnifiedTopology: true})
-    console.log('Connected to Mongo')
-  } catch (e) {
-    console.error(e)
-  }
-})
+}
+start();

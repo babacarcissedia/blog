@@ -4,12 +4,7 @@ import { Request, Response, NextFunction } from 'express'
 import userModel from '../model/User'
 import AppApiDataResponse from "../response/AppApiDataResponse";
 import  Validator from 'buddy-validator';
-import IUser from "api/user/IUser";
-import UserRepository from "../model/UserRepository";
-import {onlyOn} from "../app.helpers";
-import IPost from "../api/post/IPost";
-import AppApiErrorResponse from "../response/AppApiErrorResponse";
-import AppError from "../exception/AppError";
+import lodash from 'lodash'
 
 export default class UserController extends Controller {
   static async store(req: Request, res: Response, next: NextFunction) {
@@ -19,17 +14,16 @@ export default class UserController extends Controller {
           rules: {
               first_name: 'required',
               last_name: 'required',
-              email: ['required', 'unique:Users','email'],
+              email: ['required', 'unique:Users'],
               password: 'required|confirmed',
               token: 'required'
           },
           models: {
               Users: {
-                  async exists (filter) {
+                  exists (filter) {
                       const value = filter.email
-                     if(userModel.find({ email: value})) {
-                         throw new AppError(`Email ${value} already exists`, 422)
-                     }
+                      return userModel.countDocuments({email: value})
+
                   }
                   }
               }
@@ -66,23 +60,13 @@ export default class UserController extends Controller {
 
   static async update(request: Request, response: Response, next: NextFunction) {
     const id = request.params.id;
-    const data = onlyOn(request.body, ['first_name', 'last_name', 'email', 'password']);
-     let user: IUser | null = null
-      try {
-         user = await userModel.findById(id)
-      } catch (e) {
-          next(new NotFoundException({message: 'User not found'}))
-      }
-      if(!user) {
-          next(new NotFoundException({message: ' User not found'}))
-      }
-
-      userModel.findByIdAndUpdate(id, data, { new: false })
+    const data = lodash.pick(request.body, ['first_name', 'last_name', 'email', 'password']);
+    userModel.findByIdAndUpdate(id, data, { new: false })
       .then(user => {
         if (!user) {
           throw new NotFoundException({ message: 'User not found' })
         }
-        response.send(new AppApiDataResponse({data: user, message:`User ${user.first_name} updated.`}));
+        response.send(new AppApiDataResponse({data: Object.assign(user,data), message:`User ${request.body.first_name} updated.`}));
       })
       .catch((error) => next(error))
   }

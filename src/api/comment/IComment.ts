@@ -2,7 +2,7 @@ import IUser from "../user/IUser";
 import IPost from "../post/IPost";
 export default interface IComment {
     content: string,
-    createdAt: Date,
+    created_at: string,
     user: IUser,
     post: IPost
 }

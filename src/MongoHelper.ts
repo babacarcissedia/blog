@@ -17,17 +17,18 @@ export default class MongoHelper {
        mongoose.set('useFindAndModify', false);
        mongoose.set('useCreateIndex', true);
        mongoose.set('useUnifiedTopology', true);
-       await mongoose.connect(uri, {
-         useNewUrlParser: true,
-         useUnifiedTopology: true,
-         useCreateIndex: true
-       })
-      /* mongoose.connection.on('error', error => {
-         reject(error)
-       })
-       mongoose.connection.once('open', () => {
+       try {
+         await mongoose.connect(`${uri}`, {
+           useNewUrlParser: true,
+           useUnifiedTopology: true,
+           useCreateIndex: true
+         })
          console.log(`MongoDB successfully connected to ${uri}`)
-       })*/
+       }catch (e) {
+         mongoose.connection.on('error', error => {
+           reject(error)
+         })
+       }
      })
    }
 
