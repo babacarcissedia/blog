@@ -26,4 +26,5 @@ export const RULES = {
   password: 'required|confirmed',
   token: 'required'
 }
+
 export default User
