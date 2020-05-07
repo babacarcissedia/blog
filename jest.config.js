@@ -7,10 +7,10 @@ module.exports = {
   roots: ['<rootDir>/test'],
   coveragePathIgnorePatterns: ['<rootDir>/test/', '<rootDir>/node_modules'],
   collectCoverageFrom: [
-    "<rootDir>/src/**/*.ts",
-    "!**/node_modules/**",
+    '<rootDir>/src/**/*.ts',
+    '!**/node_modules/**'
   ],
-  "verbose": true,
+  verbose: true,
   coverageDirectory: './coverage',
   bail: 1,
   testTimeout: 30000,
