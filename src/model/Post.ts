@@ -1,13 +1,13 @@
-import mongoose, {Document} from 'mongoose'
-import IPost from "../api/post/IPost";
+import mongoose from 'mongoose'
+import { IPost } from './interfaces'
 
 const userSchema = new mongoose.Schema({
   title: String,
   slug: String,
   content: String,
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 })
 
-const postModel = mongoose.model<IPost & Document>('Post', userSchema)
+const Post = mongoose.model<IPost>('Post', userSchema)
 
-export default postModel
+export default Post

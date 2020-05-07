@@ -1,5 +1,5 @@
-import mongoose, {Document} from 'mongoose'
-import IUser from "../api/user/IUser";
+import mongoose from 'mongoose'
+import { IUser } from './interfaces'
 
 const userSchema = new mongoose.Schema({
   first_name: String,
@@ -9,6 +9,21 @@ const userSchema = new mongoose.Schema({
   token: String
 })
 
-const userModel = mongoose.model<IUser & Document>('User', userSchema)
+userSchema.set('toJSON', {
+  transform: (document, { password, __v, _id, ...rest }, options) => {
+    return {
+      ...rest, id: _id
+    }
+  }
+});
 
-export default userModel
+const User = mongoose.model<IUser>('User', userSchema)
+
+export const RULES = {
+  first_name: 'required',
+  last_name: 'required',
+  email: ['required', 'unique:Users'],
+  password: 'required|confirmed',
+  token: 'required'
+}
+export default User
