@@ -1,7 +1,6 @@
 import * as express from 'express'
 
-let requestLoggerMiddleware
-export default requestLoggerMiddleware = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+export default function requestLoggerMiddleware (req: express.Request, res: express.Response, next: express.NextFunction) {
   console.info(`${req.method} ${req.originalUrl}`)
   const start = new Date().getTime()
   res.on('finish', () => {

@@ -29,7 +29,6 @@ export default class UserController extends Controller {
   }
 
   static index (request: Request, response: Response, next: NextFunction) {
-    authMiddleware
     UserRepository.findAll()
       .then(users => response.json(new AppApiDataResponse({ data: users })))
       .catch(error => next(error))
@@ -39,9 +38,6 @@ export default class UserController extends Controller {
     const id = req.params.id
     UserRepository.find({ id })
       .then((user: any) => {
-        if (!user) {
-          throw new NotFoundException({ message: 'User not found' })
-        }
         res.json(new AppApiDataResponse({ data: user }))
       })
       .catch((error: any) => next(error))

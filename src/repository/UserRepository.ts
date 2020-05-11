@@ -1,18 +1,17 @@
 import AppException from '../exception/AppException'
 import { IUser } from '../model/interfaces'
 import User from '../model/User'
+import Dict = NodeJS.Dict;
 
 export default class UserRepository {
-  static findAll (query: {[key: string]: any} = {}): Promise<IUser[]> {
+  static findAll (query: Dict<any> = {}): Promise<IUser[]> {
     if (query.id) {
       query._id = query.id
       delete query.id
     }
     return new Promise((resolve, reject) => {
       User.find(query).populate('subscription')
-        .then((users) => {
-          resolve(users)
-        })
+        .then((users) => resolve(users))
         .catch((error: Error) => reject(error))
     })
   }

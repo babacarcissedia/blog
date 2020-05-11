@@ -11,6 +11,9 @@
     "outDir": "./dist",
     "noImplicitAny": false
   },
+  "files": [
+    "src/types.d.ts"
+  ],
   "include": [
     "src/**/*"
   ],

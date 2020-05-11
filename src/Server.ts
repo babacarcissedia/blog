@@ -2,18 +2,20 @@ import * as http from "http";
 import MongoHelper from './MongoHelper'
 import { DEBUG } from './config'
 import requestLoggerMiddleware from './middleware/request.logger.middleware'
+import errorMiddleware from './middleware/error.middleware'
 import postRoutes from './routes/postRoutes'
 import userRoutes from './routes/userRoutes'
 import cors from 'cors'
-import express, {NextFunction, Response, Request} from 'express'
+import express, { NextFunction, Response, Request } from 'express'
+import AppException from './exception/AppException'
 
 export default class Server {
   private readonly port: number
-  constructor (port: number) {
+  constructor(port: number) {
     this.port = port
   }
 
-  start (): http.Server {
+  start(): http.Server {
     // middlewares
     const app = express()
     app.use(express.json())
@@ -25,15 +27,10 @@ export default class Server {
     // routes
     app.use('/user', userRoutes)
     app.use('/post', postRoutes)
-    app.use(function (err: Error,request: Request,response: Response, next: NextFunction) {{
-      console.error(err.stack)
-      response.status(401).json({
-        type: 'error',
-        message: 'Unauthorized',
-        data: err.message
-      })
-    }
-    })
+
+    // *** THIS MIDDLEWARE SHOULD ALWAYS BE CALLED AT LAST ***
+    app.use(errorMiddleware)
+
     return app.listen(this.port, async () => {
       console.info(`Blog app listening on ${this.port}`)
       await MongoHelper.connect()
