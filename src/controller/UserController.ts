@@ -3,10 +3,11 @@ import { NextFunction, Request, Response } from 'express'
 import pick from 'lodash/pick'
 import NotFoundException from '../exception/NotFoundException'
 import ValidationException from '../exception/ValidationException'
-import { RULES } from "../model/User";
+import { RULES } from '../model/User'
 import UserRepository from '../repository/UserRepository'
 import AppApiDataResponse from '../response/AppApiDataResponse'
 import Controller from './Controller'
+import authMiddleware from '../middleware/auth.middleware'
 
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
@@ -27,9 +28,10 @@ export default class UserController extends Controller {
       .catch(error => next(error))
   }
 
-  static async index (req: Request, res: Response, next: NextFunction) {
+  static index (request: Request, response: Response, next: NextFunction) {
+    authMiddleware
     UserRepository.findAll()
-      .then(users => res.json(new AppApiDataResponse({ data: users })))
+      .then(users => response.json(new AppApiDataResponse({ data: users })))
       .catch(error => next(error))
   }
 
