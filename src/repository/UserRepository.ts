@@ -1,10 +1,11 @@
 import AppException from '../exception/AppException'
 import { IUser } from '../model/interfaces'
 import User from '../model/User'
-import Dict = NodeJS.Dict;
+//import Dict = NodeJS.Dict
+
 
 export default class UserRepository {
-  static findAll (query: Dict<any> = {}): Promise<IUser[]> {
+  static findAll (query: {[key: string]: string} = {}): Promise<IUser[]> {
     if (query.id) {
       query._id = query.id
       delete query.id

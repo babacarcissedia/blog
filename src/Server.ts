@@ -6,7 +6,7 @@ import errorMiddleware from './middleware/error.middleware'
 import postRoutes from './routes/postRoutes'
 import userRoutes from './routes/userRoutes'
 import cors from 'cors'
-import express, { NextFunction, Response, Request } from 'express'
+import express from 'express'
 import AppException from './exception/AppException'
 
 export default class Server {
