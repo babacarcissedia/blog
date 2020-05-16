@@ -6,20 +6,18 @@ import { clean, setup, stop } from "../testCase";
 let app
 let request
 describe('User', () => {
-  beforeAll(async (done) => {
+  beforeAll(async () => {
     app = await setup()
     request = supertest(app)
-    done()
   })
 
-  afterAll(async (done) => {
-    stop()
-    done()
+  afterAll(async () => {
+    await stop()
+    await app.close()
   })
 
-  beforeEach(async (done) => {
+  beforeEach(async () => {
     await clean()
-    done()
   })
 
 
@@ -35,12 +33,14 @@ describe('User', () => {
         .expect(403)
     })
     it('should allow admin user and return all results', async () => {
-      const users = await UserFactory.createMany({}, 10)
+      const count = 10
+      const users = await UserFactory.createMany({}, count)
       const user = await UserFactory.create({ role: UserRole.ADMIN })
-      const results = await request.get('/user')
+      const response = await request.get('/user')
         .set('Authorization', `Bearer ${user.token}`)
         .expect(200)
-      expect(results.length).toEqual(users.length)
+      const results = response.body.data
+      expect(results.length).toEqual(count + 1)
       for (const user of users) {
         const found = results.findIndex(u => u.id === user.id) !== -1
         expect(found).toBe(true)
