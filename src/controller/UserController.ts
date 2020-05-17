@@ -30,20 +30,10 @@ export default class UserController extends Controller {
       .catch(error => next(error))
   }
 
-  static async index (request: Request, response: Response, next: NextFunction) {
-    try {
-      let customers = await UserRepository.findAll({ role: UserRole.CUSTOMER})
-      let users = await UserRepository.findAll({ role: UserRole.ADMIN})
-      if(customers) {
-        next(new NotAuthorizedException())
-      }
-      if (users) {
-        response.json(new AppApiDataResponse({data: users}))
-      }
-    }catch (error) {
-      next(error)
-    }
-
+  static index (request: Request, response: Response, next: NextFunction) {
+     UserRepository.findAll({})
+         .then(users => response.json(new AppApiDataResponse({data: users })))
+         .catch(error => next(error))
   }
 
   static show (req: Request, res: Response, next: NextFunction) {
