@@ -34,10 +34,8 @@ export default class MongoHelper {
   }
 
   static close () {
-    if (mongoose) {
-      console.log('stoping db connection')
-      return mongoose.disconnect()
-    }
+    console.log('stoping db connection')
+    return mongoose.disconnect()
   }
 
   static truncate () {

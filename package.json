@@ -1,17 +1,24 @@
 {
   "name": "blog",
   "version": "1.0.0",
-  "description": "A simple blog project",
-  "main": "src/index.ts",
+  "description": "A simple blog",
+  "main": "./src/index.ts",
+  "_moduleAliases": {
+    "@": "dist/"
+  },
   "scripts": {
     "dev": "tsc --watch",
     "serve": "nodemon ./dist/index.js",
     "start": "node ./dist/index.js",
+    "prebuild": "rm -fr ./dist",
+    "build": "tsc",
     "test": "jest -i",
+    "test:unit": "yarn test unit",
+    "test:coverage": "yarn test --coverage=true",
     "lint": "eslint --ext .ts ./src",
     "lint:fix": "eslint --ext .ts ./src --fix"
   },
-  "author": "",
+  "author": "Babacar Cissé DIA <bcdbuddy@outlook.com>",
   "license": "ISC",
   "dependencies": {
     "@bcdbuddy/validator": "^0.8.2",
@@ -21,6 +28,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "lodash": "^4.17.15",
+    "module-alias": "^2.2.2",
     "mongoose": "^5.8.10"
   },
   "devDependencies": {
@@ -41,6 +49,7 @@
     "eslint-plugin-standard": "4",
     "faker": "^4.1.0",
     "jest": "^25.3.0",
+    "jest-mock-extended": "^1.0.8",
     "mongodb-memory-server": "^6.5.2",
     "nodemon": "^2.0.2",
     "standard": "^14.3.3",

@@ -1,3 +1,4 @@
+import 'module-alias/register';
 import { PORT } from './config'
 import Server from './Server'
 

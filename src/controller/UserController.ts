@@ -1,15 +1,11 @@
 import Validator from '@bcdbuddy/validator'
 import { NextFunction, Request, Response } from 'express'
 import pick from 'lodash/pick'
-import NotFoundException from '../exception/NotFoundException'
-import ValidationException from '../exception/ValidationException'
-import { RULES } from '../model/User'
-import UserRepository from '../repository/UserRepository'
-import AppApiDataResponse from '../response/AppApiDataResponse'
+import ValidationException from '@/exception/ValidationException'
+import { RULES } from '@/model/User'
+import UserRepository from '@/repository/UserRepository'
+import AppApiDataResponse from '@/response/AppApiDataResponse'
 import Controller from './Controller'
-import authMiddleware from '../middleware/auth.middleware'
-import { UserRole } from "../model/interfaces";
-import NotAuthorizedException from "../exception/NotAuthorizedException";
 
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
@@ -26,14 +22,16 @@ export default class UserController extends Controller {
       throw new ValidationException({ data: v.getErrors() })
     }
     UserRepository.add(data)
-      .then(user => response.json(new AppApiDataResponse({ data: user, message: `User ${user.first_name} created.` })))
+      .then(user => {
+        response.json(new AppApiDataResponse({ data: user, message: `User ${user.first_name} created.` }))
+      })
       .catch(error => next(error))
   }
 
   static index (request: Request, response: Response, next: NextFunction) {
-     UserRepository.findAll({})
-         .then(users => response.json(new AppApiDataResponse({data: users })))
-         .catch(error => next(error))
+    UserRepository.findAll({})
+      .then(users => response.json(new AppApiDataResponse({ data: users })))
+      .catch(error => next(error))
   }
 
   static show (req: Request, res: Response, next: NextFunction) {

@@ -1,7 +1,6 @@
-import AppException from '../exception/AppException'
-import { IUser } from '../model/interfaces'
-import User from '../model/User'
-//import Dict = NodeJS.Dict
+import AppException from '@/exception/AppException'
+import { IUser } from '@/model/interfaces'
+import User from '@/model/User'
 
 
 export default class UserRepository {
