@@ -7,7 +7,7 @@ export function setup () {
 }
 
 export function stop () {
-  MongoHelper.close()
+  return MongoHelper.close()
 }
 
 export function clean (): Promise<any> {

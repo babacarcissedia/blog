@@ -7,7 +7,6 @@ import postRoutes from './routes/postRoutes'
 import userRoutes from './routes/userRoutes'
 import cors from 'cors'
 import express from 'express'
-import AppException from './exception/AppException'
 
 export default class Server {
   private readonly port: number

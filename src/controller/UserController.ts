@@ -1,15 +1,13 @@
 import Validator from '@bcdbuddy/validator'
 import { NextFunction, Request, Response } from 'express'
 import pick from 'lodash/pick'
-import NotFoundException from '../exception/NotFoundException'
+import NotAuthorizedException from "../exception/NotAuthorizedException";
 import ValidationException from '../exception/ValidationException'
+import { UserRole } from "../model/interfaces";
 import { RULES } from '../model/User'
 import UserRepository from '../repository/UserRepository'
 import AppApiDataResponse from '../response/AppApiDataResponse'
 import Controller from './Controller'
-import authMiddleware from '../middleware/auth.middleware'
-import { UserRole } from "../model/interfaces";
-import NotAuthorizedException from "../exception/NotAuthorizedException";
 
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {

@@ -12,14 +12,14 @@ export default class UserFactory extends AppFactory {
     const password: string = PASSWORD
 
     const defaultOptions = {
-      id: faker.random.uuid(),
-      first_name: faker.name.firstName(),
-      last_name: faker.name.lastName(),
-      email: faker.internet.email(),
-      password: password,
-      password_confirmation: password,
-      role: faker.random.arrayElement(userRoleValues),
-      token: faker.random.uuid()
+      id: options.id || faker.random.uuid(),
+      first_name: options.first_name || faker.name.firstName(),
+      last_name: options.last_name || faker.name.lastName(),
+      email: options.email || faker.internet.email(),
+      password: options.password || password,
+      password_confirmation: options.password_confirmation || password,
+      role: options.role || faker.random.arrayElement(userRoleValues),
+      token: options.token || faker.random.uuid()
     }
     return Object.assign({}, defaultOptions, options)
   }
