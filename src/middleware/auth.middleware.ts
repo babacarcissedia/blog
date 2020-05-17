@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import AuthenticationException from '../exception/AuthenticationException'
 import UserRepository from '../repository/UserRepository'
+import NotAuthorizedException from "../exception/NotAuthorizedException";
 
 export default async function authMiddleware (request: Request, response: Response, next: NextFunction): Promise<void> {
   const token = String(request.headers.authorization).replace('Bearer ', '')
@@ -9,5 +10,8 @@ export default async function authMiddleware (request: Request, response: Respon
     return next(new AuthenticationException({ status: 401 }))
   }
   request.user = users[0]
+  if(request.user.role === 'CUSTOMER' ) {
+    return next(new NotAuthorizedException())
+  }
   next()
 }
