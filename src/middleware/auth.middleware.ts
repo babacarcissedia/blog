@@ -11,11 +11,8 @@ export default async function authMiddleware (request: Request, response: Respon
   }
   const users = await UserRepository.findAll({ token })
   if (users.length === 0) {
-    throw new AppException({ status: 403, message: 'No user found with that token, maybe expired.' })
+    throw new AppException({ status: 401, message: 'No user found with that token, maybe expired.' })
   }
   request.user = users[0]
-  if (request.user.role === 'CUSTOMER') {
-    throw new AuthorizationException()
-  }
   next()
 }

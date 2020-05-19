@@ -1,6 +1,6 @@
-import authMiddleware from "@/middleware/auth.middleware";
+import authMiddleware from '@/middleware/auth.middleware';
 import { NextFunction, Request, Response } from "express";
-import { mock } from "jest-mock-extended";
+import { mock } from 'jest-mock-extended'
 import 'module-alias/register';
 import UserFactory from "@/factory/UserFactory";
 import MongoHelper from "@/MongoHelper";
