@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import mongoose from 'mongoose'
 import { IN_TEST, MONGO_URI } from './config'
 import UserRepository from './repository/UserRepository'

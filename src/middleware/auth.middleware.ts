@@ -1,13 +1,12 @@
 import AppException from "@/exception/AppException";
 import { NextFunction, Request, Response } from 'express'
-import AuthorizationException from "@/exception/AuthorizationException";
 import UserRepository from '@/repository/UserRepository'
 
 export default async function authMiddleware (request: Request, response: Response, next: NextFunction) {
   const token = String(request.headers.authorization || '')
     .replace('Bearer ', '')
   if (!token) {
-    throw new AppException({ message: 'You need to login to access this resource.', status: 401 })
+    throw new AppException({ status: 401, message: 'You need to login to access this resource.' })
   }
   const users = await UserRepository.findAll({ token })
   if (users.length === 0) {

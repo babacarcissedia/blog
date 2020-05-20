@@ -4,7 +4,8 @@ export default function errorMiddleware (error: Error, request: Request, respons
   const message = error.message || 'Something went wrong'
   const data = error['data'] || error
   const status = error['status'] || 500
-  return response.status(status)
+  return response
+    .status(status)
     .json({
       type: 'error',
       message,

@@ -8,10 +8,12 @@ import MongoHelper from "@/MongoHelper";
 describe('auth.middleware', () => {
   beforeAll(async () => {
     await MongoHelper.connect()
+    console.log('mongo. connected')
   })
 
   afterAll(async () => {
     await MongoHelper.close()
+    console.log('mongo. close')
   })
 
 
@@ -27,7 +29,7 @@ describe('auth.middleware', () => {
     }
   })
 
-  it('should throw 403 when authorization header was sent but no user found', async () => {
+  it('should throw 401 when authorization header was sent but no user found', async () => {
     const request = mock<Request>()
     const response = mock<Response>()
     const next = mock<NextFunction>()
@@ -35,7 +37,7 @@ describe('auth.middleware', () => {
     try {
       await authMiddleware(request, response, next)
     } catch (error) {
-      expect(error.status).toBe(403)
+      expect(error.status).toBe(401)
     }
   })
 
