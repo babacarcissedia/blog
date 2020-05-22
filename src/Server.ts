@@ -15,7 +15,6 @@ export default class Server {
   }
 
   start(): http.Server {
-    // middlewares
     const app = express()
     app.use(express.json())
     app.use(cors())

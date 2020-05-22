@@ -1,10 +1,12 @@
-import Validator from '@bcdbuddy/validator'
-import { NextFunction, Request, Response } from 'express'
-import pick from 'lodash/pick'
+import AuthorizationException from "@/exception/AuthorizationException";
 import ValidationException from '@/exception/ValidationException'
+import { UserRole } from "@/model/interfaces";
 import { RULES } from '@/model/User'
 import UserRepository from '@/repository/UserRepository'
 import AppApiDataResponse from '@/response/AppApiDataResponse'
+import Validator from '@bcdbuddy/validator'
+import { NextFunction, Request, Response } from 'express'
+import pick from 'lodash/pick'
 import Controller from './Controller'
 
 export default class UserController extends Controller {
@@ -34,11 +36,11 @@ export default class UserController extends Controller {
       .catch(error => next(error))
   }
 
-  static show (req: Request, res: Response, next: NextFunction) {
-    const id = req.params.id
+  static show (request: Request, response: Response, next: NextFunction) {
+    const id = request.params.id
     UserRepository.find({ id })
       .then((user: any) => {
-        res.json(new AppApiDataResponse({ data: user }))
+        response.json(new AppApiDataResponse({ data: user }))
       })
       .catch((error: any) => next(error))
   }
