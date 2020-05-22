@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { IN_TEST, MONGO_URI } from './config'
+import { IN_TEST, MONGO_URI, PORT} from './config'
 import UserRepository from './repository/UserRepository'
 export default class MongoHelper {
   static async connect () {

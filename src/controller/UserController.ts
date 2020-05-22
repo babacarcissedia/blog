@@ -9,7 +9,7 @@ import Controller from './Controller'
 
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
-    const data = request.body
+    const data = pick(request.body,['first_name','last_name','email','password','role'])
     // TODO: pick
     const v = await Validator.make({
       data,
@@ -46,6 +46,16 @@ export default class UserController extends Controller {
   static async update (request: Request, response: Response, next: NextFunction) {
     const id = request.params.id
     const data = pick(request.body, ['first_name', 'last_name', 'email', 'password'])
+    const valid = await Validator.make({
+      data,
+      rules: RULES,
+      models: {
+        Users: UserRepository
+      }
+    })
+    if (valid.fails()) {
+      throw new ValidationException({ data: valid.getErrors() })
+    }
     UserRepository.update(id, data)
       .then(user => {
         response.send(new AppApiDataResponse({
