@@ -26,7 +26,7 @@ export default class UserFactory extends AppFactory {
 
   public static async create (options: any = {}): Promise<IUser> {
     const payload = await UserFactory.make(options)
-    return await UserRepository.add(omit(payload, ['password_confirmation']))
+    return UserRepository.add(omit(payload, ['password_confirmation']))
   }
 
   public static createMany (options: any = {}, count = 1): Promise<IUser[]> {

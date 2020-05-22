@@ -18,4 +18,16 @@ export default class AppApiResponse {
       data: this.data
     })
   }
+
+  static from (payload) {
+    return new AppApiResponse(payload)
+  }
+
+  isSuccess () {
+    return this.type === AppApiResponse.TYPE_SUCCESS
+  }
+
+  getData () {
+    return this.data
+  }
 }

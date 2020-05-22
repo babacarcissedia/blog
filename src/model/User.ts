@@ -18,6 +18,8 @@ userSchema.set('toJSON', {
   }
 });
 
+const FILLABLE = ['first_name', 'last_name', 'email']
+
 const User = mongoose.model<IUser>('User', userSchema)
 
 export const RULES = {
