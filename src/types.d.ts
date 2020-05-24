@@ -1,11 +1,10 @@
-import IUser from "./api/user/IUser";
+import { IUser } from './model/interfaces'
 
 declare global{
   namespace Express {
     export interface Request {
-      token: any;
-      user: IUser;
-      isJson (): boolean;
+      user: IUser
+      isJson (): boolean
     }
   }
 }

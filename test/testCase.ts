@@ -1,10 +1,19 @@
-import startServer from '../src/index'
+import Server from '../src/Server'
 import MongoHelper from "../src/MongoHelper";
 
 export function setup () {
-  return startServer()
+  const server = new Server(9999)
+  return server.start()
+}
+
+export function start () {
+  return MongoHelper.connect()
+}
+
+export function stop () {
+  return MongoHelper.close()
 }
 
 export function clean (): Promise<any> {
-  return MongoHelper.close()
+  return MongoHelper.truncate()
 }
