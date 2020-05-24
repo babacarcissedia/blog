@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.set('toJSON', {
-  transform: (document, { password, __v, _id, ...rest }, options) => {
+  transform: (document, { __v, _id, ...rest }, options) => {
     return {
       ...rest, id: _id
     }

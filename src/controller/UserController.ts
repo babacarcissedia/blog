@@ -6,7 +6,6 @@ import UserRepository from '@/repository/UserRepository'
 import AppApiDataResponse from '@/response/AppApiDataResponse'
 import Validator from '@bcdbuddy/validator'
 import { NextFunction, Request, Response } from 'express'
-import pick from 'lodash/pick'
 import Controller from './Controller'
 
 export default class UserController extends Controller {
@@ -31,7 +30,11 @@ export default class UserController extends Controller {
   }
 
   static index (request: Request, response: Response, next: NextFunction) {
-    UserRepository.findAll({})
+    const authUser = request.user
+    if (authUser.role !== UserRole.ADMIN) {
+      return next(new AuthorizationException())
+    }
+    UserRepository.findAll()
       .then(users => response.json(new AppApiDataResponse({ data: users })))
       .catch(error => next(error))
   }
@@ -47,12 +50,12 @@ export default class UserController extends Controller {
 
   static async update (request: Request, response: Response, next: NextFunction) {
     const id = request.params.id
-    const data = pick(request.body, ['first_name', 'last_name', 'email', 'password'])
+    const data = request.body
     UserRepository.update(id, data)
       .then(user => {
         response.send(new AppApiDataResponse({
-          data: Object.assign(user, data),
-          message: `User ${request.body.first_name} updated.`
+          data: user,
+          message: `User ${user.first_name} updated.`
         }))
       })
       .catch((error) => next(error))
