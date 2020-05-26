@@ -1,13 +1,12 @@
-import AuthorizationException from "@/exception/AuthorizationException";
-import ValidationException from '@/exception/ValidationException'
-import { UserRole } from "@/model/interfaces";
-import { RULES } from '@/model/User'
-import UserRepository from '@/repository/UserRepository'
-import AppApiDataResponse from '@/response/AppApiDataResponse'
 import Validator from '@bcdbuddy/validator'
 import { NextFunction, Request, Response } from 'express'
 import pick from 'lodash/pick'
+import ValidationException from '@/exception/ValidationException'
+import { RULES } from '@/model/User'
+import UserRepository from '@/repository/UserRepository'
+import AppApiDataResponse from '@/response/AppApiDataResponse'
 import Controller from './Controller'
+import AppException from "@/exception/AppException";
 
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
@@ -31,13 +30,20 @@ export default class UserController extends Controller {
   }
 
   static index (request: Request, response: Response, next: NextFunction) {
+    if(request.user.role === 'CUSTOMER') {
+      return next(new AppException({message: `You are not authorized`, status: 403}))
+    }
     UserRepository.findAll({})
       .then(users => response.json(new AppApiDataResponse({ data: users })))
       .catch(error => next(error))
   }
 
-  static show (request: Request, response: Response, next: NextFunction) {
+  static async show (request: Request, response: Response, next: NextFunction) {
     const id = request.params.id
+    const user = await  UserRepository.find({id})
+    if(user.token !== request.user.token ) {
+      return next(new AppException({message: `You are not authorized`, status: 403}))
+    }
     UserRepository.find({ id })
       .then((user: any) => {
         response.json(new AppApiDataResponse({ data: user }))
