@@ -1,14 +1,23 @@
 import mongoose from 'mongoose'
-import { IN_TEST, MONGO_URI, PORT} from './config'
+import { IN_TEST, MONGO_URI } from './config'
 import UserRepository from './repository/UserRepository'
-export default class MongoHelper {
-  static async connect () {
-    return await new Promise(async (resolve, reject) => {
+
+export default class Database {
+  private options;
+  private onCloseListeners: (() => void)[] = [];
+
+  constructor (options = {}) {
+    this.options = Object.assign({}, options)
+  }
+
+  connect () {
+    return new Promise(async (resolve, reject) => {
       let uri
       if (IN_TEST) {
         const { MongoMemoryServer } = await import('mongodb-memory-server')
         const mongo = new MongoMemoryServer()
         uri = await mongo.getConnectionString()
+        this.onClose(() => mongo.stop())
       } else {
         uri = MONGO_URI
       }
@@ -32,12 +41,19 @@ export default class MongoHelper {
     })
   }
 
-  static close () {
-    console.log('stoping db connection')
+  onClose (listener) {
+    this.onCloseListeners.push(listener)
+  }
+
+  close () {
+    console.log('stopping db connection')
+    for (const listener of this.onCloseListeners) {
+      listener()
+    }
     return mongoose.disconnect()
   }
 
-  static truncate () {
+  truncate () {
     return Promise.all([
       UserRepository.truncate()
     ])

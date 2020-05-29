@@ -1,20 +1,25 @@
-import * as http from "http";
-import MongoHelper from './MongoHelper'
-import { DEBUG } from './config'
-import requestLoggerMiddleware from './middleware/request.logger.middleware'
-import errorMiddleware from './middleware/error.middleware'
-import postRoutes from './routes/postRoutes'
-import userRoutes from './routes/userRoutes'
 import cors from 'cors'
 import express from 'express'
+import * as http from "http";
+import { DEBUG } from './config'
+import Database from './Database'
+import errorMiddleware from './middleware/error.middleware'
+import requestLoggerMiddleware from './middleware/request.logger.middleware'
+import postRoutes from './routes/postRoutes'
+import userRoutes from './routes/userRoutes'
 
 export default class Server {
   private readonly port: number
-  constructor(port: number) {
+  private readonly database: Database
+  private instance: any
+
+  constructor (port: number, database: Database) {
     this.port = port
+    this.database = database
   }
 
-  start(): http.Server {
+  async start (): Promise<http.Server> {
+    await this.database.connect()
     const app = express()
     app.use(express.json())
     app.use(cors())
@@ -29,9 +34,16 @@ export default class Server {
     // *** THIS MIDDLEWARE SHOULD ALWAYS BE CALLED AT LAST ***
     app.use(errorMiddleware)
 
-    return app.listen(this.port, async () => {
+    this.instance = await app.listen(this.port, async () => {
       console.info(`Blog app listening on ${this.port}`)
-      await MongoHelper.connect()
     })
+    return this.instance
+  }
+
+  async end () {
+    return Promise.all([
+      this.database.close(),
+      this.instance.close()
+    ])
   }
 }

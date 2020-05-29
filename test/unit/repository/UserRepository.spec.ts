@@ -1,21 +1,17 @@
 import UserFactory from "@/factory/UserFactory";
 import UserRepository from "@/repository/UserRepository";
-import { hash, hashCompare } from "../../../src/helper/app.helpers";
-import { clean, start, stop } from "../../testCase";
-import crypto from 'crypto'
+import { hashCompare } from "../../../src/helper/app.helpers";
+import { startDatabase } from "../../testCase";
 
-describe('UserRepository', () => {
-
+describe.skip('UserRepository', () => {
+  let database
   beforeAll(async () => {
-    await start()
+    database = startDatabase()
+    await database.connect()
   })
 
   afterAll(async () => {
-    await stop()
-  })
-
-  beforeEach(async () => {
-    await clean()
+    await database.stop()
   })
 
 

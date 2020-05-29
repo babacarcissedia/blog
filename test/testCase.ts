@@ -1,19 +1,11 @@
 import Server from '../src/Server'
-import MongoHelper from "../src/MongoHelper";
+import Database from "../src/Database";
 
-export function setup () {
-  const server = new Server(9999)
+export function setup (database) {
+  const server = new Server(9999, database)
   return server.start()
 }
 
-export function start () {
-  return MongoHelper.connect()
-}
-
-export function stop () {
-  return MongoHelper.close()
-}
-
-export function clean (): Promise<any> {
-  return MongoHelper.truncate()
+export function startDatabase () {
+  return new Database()
 }
