@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
-dotenv.config({ path: process.env.NODE_ENV=== 'test' ? '../test.env' : '../.env' })
+
+dotenv.config({ path: process.env.NODE_ENV=== 'test' ? '../test.env' : './.env' })
 
 export const DEBUG = process.env.DEBUG === 'true'
 export const NODE_ENV = String(process.env.NODE_ENV)

@@ -3,16 +3,18 @@ import { NextFunction, Request, Response } from "express";
 import { mock } from 'jest-mock-extended'
 import 'module-alias/register';
 import UserFactory from "@/factory/UserFactory";
-import MongoHelper from "@/MongoHelper";
+import { startDatabase } from "../../testCase";
 
-describe('auth.middleware', () => {
+describe.skip('auth.middleware', () => {
+  let database
   beforeAll(async () => {
-    await MongoHelper.connect()
+    database = startDatabase()
+    await database.connect()
     console.log('mongo. connected')
   })
 
   afterAll(async () => {
-    await MongoHelper.close()
+    await database.close()
     console.log('mongo. close')
   })
 

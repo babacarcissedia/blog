@@ -12,7 +12,7 @@
     "start": "node ./dist/index.js",
     "prebuild": "rm -fr ./dist",
     "build": "tsc",
-    "test": "cross-env NODE_ENV=test jest -i",
+    "test": "cross-env NODE_ENV=test jest -i --detectOpenHandles",
     "test:unit": "yarn test unit",
     "test:coverage": "yarn test --coverage=true",
     "lint": "eslint --ext .ts ./src",

@@ -1,6 +1,10 @@
 import 'module-alias/register';
+import Database from "@/Database";
 import { PORT } from './config'
 import Server from './Server'
 
-const server = new Server(PORT)
-server.start()
+(async () => {
+  const database = new Database()
+  const server = new Server(PORT, database)
+  server.start()
+})()
