@@ -6,6 +6,10 @@ export function setup () {
   return server.start()
 }
 
+export function start () {
+  return MongoHelper.connect()
+}
+
 export function stop () {
   return MongoHelper.close()
 }

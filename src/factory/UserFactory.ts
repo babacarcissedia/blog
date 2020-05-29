@@ -1,9 +1,9 @@
 import * as faker from 'faker'
-import { range } from '../helper/app.helpers'
-import { IUser, userRoleValues } from '../model/interfaces'
+import omit from 'lodash/omit'
+import { range } from '@/helper/app.helpers'
+import { IUser, UserRole } from '@/model/interfaces'
 import UserRepository from '../repository/UserRepository'
 import AppFactory from './AppFactory'
-import omit from 'lodash/omit'
 
 const PASSWORD = 'secret'
 
@@ -18,7 +18,7 @@ export default class UserFactory extends AppFactory {
       email: options.email || faker.internet.email(),
       password: options.password || password,
       password_confirmation: options.password_confirmation || password,
-      role: options.role || faker.random.arrayElement(userRoleValues),
+      role: options.role || UserRole.CUSTOMER,
       token: options.token || faker.random.uuid()
     }
     return Object.assign({}, defaultOptions, options)

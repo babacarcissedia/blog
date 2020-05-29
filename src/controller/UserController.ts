@@ -5,6 +5,8 @@ import ValidationException from '@/exception/ValidationException'
 import { RULES } from '@/model/User'
 import UserRepository from '@/repository/UserRepository'
 import AppApiDataResponse from '@/response/AppApiDataResponse'
+import Validator from '@bcdbuddy/validator'
+import { NextFunction, Request, Response } from 'express'
 import Controller from './Controller'
 import AppException from "@/exception/AppException";
 
@@ -30,10 +32,11 @@ export default class UserController extends Controller {
   }
 
   static index (request: Request, response: Response, next: NextFunction) {
-    if(request.user.role === 'CUSTOMER') {
-      return next(new AppException({message: `You are not authorized`, status: 403}))
+    const authUser = request.user
+    if (authUser.role !== UserRole.ADMIN) {
+      return next(new AuthorizationException())
     }
-    UserRepository.findAll({})
+    UserRepository.findAll()
       .then(users => response.json(new AppApiDataResponse({ data: users })))
       .catch(error => next(error))
   }
@@ -66,8 +69,8 @@ export default class UserController extends Controller {
     UserRepository.update(id, data)
       .then(user => {
         response.send(new AppApiDataResponse({
-          data: Object.assign(user, data),
-          message: `User ${request.body.first_name} updated.`
+          data: user,
+          message: `User ${user.first_name} updated.`
         }))
       })
       .catch((error) => next(error))

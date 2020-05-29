@@ -1,4 +1,5 @@
 import AppException from '@/exception/AppException'
+import { hash } from "@/helper/app.helpers";
 import { IUser } from '@/model/interfaces'
 import User from '@/model/User'
 
@@ -43,6 +44,7 @@ export default class UserRepository {
 
   static add (data): Promise<IUser> {
     return new Promise(async (resolve, reject) => {
+      data.password = await hash(data.password)
       const user = new User(data)
       user.save()
         .then(async (userSaved) => {
