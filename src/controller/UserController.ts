@@ -40,9 +40,8 @@ export default class UserController extends Controller {
 
   static async show (request: Request, response: Response, next: NextFunction) {
     const id = request.params.id
-    const user = await  UserRepository.find({id})
-    if(user.token !== request.user.token ) {
-      return next(new AppException({message: `You are not authorized`, status: 403}))
+    if(request.user.id !== id && request.user.role !== 'ADMIN') {
+      return next(next(new AppException({ message: `You are not authorized`, status: 403})))
     }
     UserRepository.find({ id })
       .then((user: any) => {
