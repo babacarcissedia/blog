@@ -66,6 +66,9 @@ export default class UserController extends Controller {
     if (valid.fails()) {
       throw new ValidationException({ data: valid.getErrors() })
     }
+    if(request.user.id !== id && request.user.role !== 'ADMIN') {
+      return next(new AppException({ message: `You are not authorized`, status: 403}))
+    }
     UserRepository.update(id, data)
       .then(user => {
         response.send(new AppApiDataResponse({
@@ -78,6 +81,9 @@ export default class UserController extends Controller {
 
   static destroy (request: Request, response: Response, next: NextFunction) {
     const id = request.params.id
+    if(request.user.id !== id && request.user.role !== 'ADMIN') {
+      return next(new AppException({ message: `You are not authorized`, status: 403}))
+    }
     UserRepository.delete(id)
       .then(user => {
         response.json(new AppApiDataResponse({ data: user, message: `User ${id} deleted.` }))
