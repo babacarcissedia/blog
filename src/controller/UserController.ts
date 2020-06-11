@@ -9,6 +9,7 @@ import AppApiDataResponse from '@/response/AppApiDataResponse'
 import Validator from '@bcdbuddy/validator'
 import Controller from './Controller'
 import AppException from "@/exception/AppException";
+import UserPolicy from "@/policy/UserPolicy";
 
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
@@ -32,10 +33,7 @@ export default class UserController extends Controller {
   }
 
   static index (request: Request, response: Response, next: NextFunction) {
-    const authUser = request.user
-    if (authUser.role !== UserRole.ADMIN) {
-      return next(new AuthorizationException())
-    }
+    UserPolicy.canFetchUsers(request, next)
     UserRepository.findAll()
       .then(users => response.json(new AppApiDataResponse({ data: users })))
       .catch(error => next(error))
@@ -43,9 +41,7 @@ export default class UserController extends Controller {
 
   static async show (request: Request, response: Response, next: NextFunction) {
     const id = request.params.id
-    if(request.user.id !== id && request.user.role !== 'ADMIN') {
-      return next(next(new AppException({ message: `You are not authorized`, status: 403})))
-    }
+    UserPolicy.canShowUser(request, id, next)
     UserRepository.find({ id })
       .then((user: any) => {
         response.json(new AppApiDataResponse({ data: user }))
@@ -66,9 +62,7 @@ export default class UserController extends Controller {
     if (valid.fails()) {
       throw new ValidationException({ data: valid.getErrors() })
     }
-    if(request.user.id !== id && request.user.role !== 'ADMIN') {
-      return next(new AppException({ message: `You are not authorized`, status: 403}))
-    }
+    UserPolicy.canUpdateUser(request,id, next)
     UserRepository.update(id, data)
       .then(user => {
         response.send(new AppApiDataResponse({
@@ -81,9 +75,7 @@ export default class UserController extends Controller {
 
   static destroy (request: Request, response: Response, next: NextFunction) {
     const id = request.params.id
-    if(request.user.id !== id && request.user.role !== 'ADMIN') {
-      return next(new AppException({ message: `You are not authorized`, status: 403}))
-    }
+    UserPolicy.canDeleteUser(request, id, next)
     UserRepository.delete(id)
       .then(user => {
         response.json(new AppApiDataResponse({ data: user, message: `User ${id} deleted.` }))
