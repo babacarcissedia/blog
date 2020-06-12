@@ -13,73 +13,85 @@ import UserPolicy from "@/policy/UserPolicy";
 
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
-    const data = pick(request.body,['first_name','last_name','email','password','role'])
-    // TODO: pick
-    const v = await Validator.make({
-      data,
-      rules: RULES,
-      models: {
-        Users: UserRepository
-      }
-    })
-    if (v.fails()) {
-      throw new ValidationException({ data: v.getErrors() })
-    }
-    UserRepository.add(data)
-      .then(user => {
-        response.json(new AppApiDataResponse({ data: user, message: `User ${user.first_name} created.` }))
+    try {
+      const data = pick(request.body,['first_name','last_name','email','password','role'])
+      // TODO: pick
+      const v = await Validator.make({
+        data,
+        rules: RULES,
+        models: {
+          Users: UserRepository
+        }
       })
-      .catch(error => next(error))
+      if (v.fails()) {
+        throw new ValidationException({ data: v.getErrors() })
+      }
+      const user = await UserRepository.add(data)
+      if(user) {
+        response.json(new AppApiDataResponse({ data: user, message: `User ${user.first_name} created.` }))
+      }
+    } catch (error) {
+      next(error)
+    }
   }
 
   static index (request: Request, response: Response, next: NextFunction) {
-    UserPolicy.canFetchUsers(request, next)
+    UserPolicy.canFetchUsers(request.user)
     UserRepository.findAll()
       .then(users => response.json(new AppApiDataResponse({ data: users })))
       .catch(error => next(error))
   }
 
   static async show (request: Request, response: Response, next: NextFunction) {
-    const id = request.params.id
-    UserPolicy.canShowUser(request, id, next)
-    UserRepository.find({ id })
-      .then((user: any) => {
+    try {
+      const id = request.params.id
+      UserPolicy.canShowUser(request.user, id)
+      const user = await UserRepository.find({ id })
+      if(user) {
         response.json(new AppApiDataResponse({ data: user }))
-      })
-      .catch((error: any) => next(error))
+      }
+    } catch (error) {
+      next(error)
+    }
   }
 
   static async update (request: Request, response: Response, next: NextFunction) {
-    const id = request.params.id
-    const data = pick(request.body, ['first_name', 'last_name', 'email', 'password'])
-    const valid = await Validator.make({
-      data,
-      rules: RULES,
-      models: {
-        Users: UserRepository
-      }
-    })
-    if (valid.fails()) {
-      throw new ValidationException({ data: valid.getErrors() })
-    }
-    UserPolicy.canUpdateUser(request,id, next)
-    UserRepository.update(id, data)
-      .then(user => {
-        response.send(new AppApiDataResponse({
-          data: user,
-          message: `User ${user.first_name} updated.`
-        }))
+    try {
+      const id = request.params.id
+      const data = pick(request.body, ['first_name', 'last_name', 'email', 'password'])
+      const valid = await Validator.make({
+        data,
+        rules: RULES,
+        models: {
+          Users: UserRepository
+        }
       })
-      .catch((error) => next(error))
+      if (valid.fails()) {
+        throw new ValidationException({ data: valid.getErrors() })
+      }
+      UserPolicy.canUpdateUser(request.user,id)
+      const updateUser = await UserRepository.update(id, data)
+          if(updateUser) {
+            response.send(new AppApiDataResponse({
+              data: updateUser,
+              message: `User ${updateUser.first_name} updated.`
+            }))
+          }
+    } catch (error) {
+      next(error)
+    }
   }
 
-  static destroy (request: Request, response: Response, next: NextFunction) {
-    const id = request.params.id
-    UserPolicy.canDeleteUser(request, id, next)
-    UserRepository.delete(id)
-      .then(user => {
-        response.json(new AppApiDataResponse({ data: user, message: `User ${id} deleted.` }))
-      })
-      .catch((error) => next(error))
+  static async destroy (request: Request, response: Response, next: NextFunction) {
+    try {
+      const id = request.params.id
+      UserPolicy.canDeleteUser(request.user, id)
+      const deleteUser = await UserRepository.delete(id)
+      if(deleteUser) {
+        response.json(new AppApiDataResponse({ data: deleteUser, message: `User ${id} deleted.` }))
+      }
+    }catch (error) {
+      next(error)
+    }
   }
 }
