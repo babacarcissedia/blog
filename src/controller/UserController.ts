@@ -27,29 +27,31 @@ export default class UserController extends Controller {
         throw new ValidationException({ data: v.getErrors() })
       }
       const user = await UserRepository.add(data)
-      if(user) {
-        response.json(new AppApiDataResponse({ data: user, message: `User ${user.first_name} created.` }))
-      }
+      response.json(new AppApiDataResponse({ data: user, message: `User ${user.first_name} created.` }))
     } catch (error) {
       next(error)
     }
   }
 
-  static index (request: Request, response: Response, next: NextFunction) {
-    UserPolicy.canFetchUsers(request.user)
-    UserRepository.findAll()
-      .then(users => response.json(new AppApiDataResponse({ data: users })))
-      .catch(error => next(error))
+  static async index (request: Request, response: Response, next: NextFunction) {
+    try {
+      if(UserPolicy.canFetchUsers(request.user)) {
+        const users = await UserRepository.findAll()
+        response.json(new AppApiDataResponse({ data: users }))
+      }
+    }catch (error) {
+      next(error)
+    }
   }
 
   static async show (request: Request, response: Response, next: NextFunction) {
     try {
       const id = request.params.id
-      UserPolicy.canShowUser(request.user, id)
-      const user = await UserRepository.find({ id })
-      if(user) {
-        response.json(new AppApiDataResponse({ data: user }))
+      if(!UserPolicy.canShowUser(request.user, id)) {
+        next(new AppException({message: `You are not authorized`, status: 403}))
       }
+      const user = await UserRepository.find({ id })
+      response.json(new AppApiDataResponse({ data: user }))
     } catch (error) {
       next(error)
     }
@@ -69,14 +71,14 @@ export default class UserController extends Controller {
       if (valid.fails()) {
         throw new ValidationException({ data: valid.getErrors() })
       }
-      UserPolicy.canUpdateUser(request.user,id)
+      if(!UserPolicy.canUpdateUser(request.user,id)) {
+        next(next(new AuthorizationException()))
+      }
       const updateUser = await UserRepository.update(id, data)
-          if(updateUser) {
-            response.send(new AppApiDataResponse({
+      response.send(new AppApiDataResponse({
               data: updateUser,
               message: `User ${updateUser.first_name} updated.`
             }))
-          }
     } catch (error) {
       next(error)
     }
@@ -85,11 +87,11 @@ export default class UserController extends Controller {
   static async destroy (request: Request, response: Response, next: NextFunction) {
     try {
       const id = request.params.id
-      UserPolicy.canDeleteUser(request.user, id)
-      const deleteUser = await UserRepository.delete(id)
-      if(deleteUser) {
-        response.json(new AppApiDataResponse({ data: deleteUser, message: `User ${id} deleted.` }))
+      if(!UserPolicy.canDeleteUser(request.user, id)) {
+        next(new AppException({message: `You are not authorized`, status: 403}))
       }
+      const deleteUser = await UserRepository.delete(id)
+      response.json(new AppApiDataResponse({ data: deleteUser, message: `User ${id} deleted.` }))
     }catch (error) {
       next(error)
     }
