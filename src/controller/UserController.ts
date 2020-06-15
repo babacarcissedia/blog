@@ -9,6 +9,7 @@ import AppApiDataResponse from '@/response/AppApiDataResponse'
 import Validator from '@bcdbuddy/validator'
 import Controller from './Controller'
 import AppException from "@/exception/AppException";
+import UserPolicy from "@/policy/UserPolicy";
 
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
@@ -32,8 +33,7 @@ export default class UserController extends Controller {
   }
 
   static index (request: Request, response: Response, next: NextFunction) {
-    const authUser = request.user
-    if (authUser.role !== UserRole.ADMIN) {
+    if (!UserPolicy.canFetchUsers(request.user)) {
       return next(new AuthorizationException())
     }
     UserRepository.findAll()
