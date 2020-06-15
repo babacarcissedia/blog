@@ -9,7 +9,7 @@ import AppApiDataResponse from '@/response/AppApiDataResponse'
 import Validator from '@bcdbuddy/validator'
 import Controller from './Controller'
 import AppException from "@/exception/AppException";
-import UserPolicy from "@/policy/UserPolicy";
+import UserPolicy from '@/policy/UserPolicy';
 
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
