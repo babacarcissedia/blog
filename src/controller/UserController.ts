@@ -34,7 +34,7 @@ export default class UserController extends Controller {
 
   static index (request: Request, response: Response, next: NextFunction) {
     if (!UserPolicy.canFetchUsers(request.user)) {
-      return next(new AuthorizationException())
+      return next(new AppException({message: `You are not authorized`, status: 403}))
     }
     UserRepository.findAll()
       .then(users => response.json(new AppApiDataResponse({ data: users })))
@@ -42,42 +42,54 @@ export default class UserController extends Controller {
   }
 
   static async show (request: Request, response: Response, next: NextFunction) {
-    const id = request.params.id
-    if(request.user.id !== id && request.user.role !== 'ADMIN') {
-      return next(next(new AppException({ message: `You are not authorized`, status: 403})))
+    try {
+      const id = request.params.id
+      if(!UserPolicy.canShowUser(request.user, id)) {
+        return next(next(new AppException({ message: `You are not authorized`, status: 403})))
+      }
+      const user = await UserRepository.find({ id })
+      if(user) {
+        return response.json(new AppApiDataResponse({ data: user }))
+      }
+    } catch (error) {
+       next(error)
     }
-    UserRepository.find({ id })
-      .then((user: any) => {
-        response.json(new AppApiDataResponse({ data: user }))
-      })
-      .catch((error: any) => next(error))
   }
 
   static async update (request: Request, response: Response, next: NextFunction) {
     const id = request.params.id
     const data = pick(request.body, ['first_name', 'last_name', 'email', 'password'])
-    const valid = await Validator.make({
-      data,
-      rules: RULES,
-      models: {
-        Users: UserRepository
+    try {
+      if(!UserPolicy.canUpdateUser(request.user, id)) {
+        return next(new AuthorizationException())
       }
-    })
-    if (valid.fails()) {
-      throw new ValidationException({ data: valid.getErrors() })
-    }
-    UserRepository.update(id, data)
-      .then(user => {
-        response.send(new AppApiDataResponse({
-          data: user,
-          message: `User ${user.first_name} updated.`
-        }))
+      const valid = await Validator.make({
+        data,
+        rules: RULES,
+        models: {
+          Users: UserRepository
+        }
       })
-      .catch((error) => next(error))
+      if (valid.fails()) {
+        throw new ValidationException({ data: valid.getErrors() })
+      }
+      const userUpdate = await UserRepository.update(id, data)
+      if(userUpdate) {
+        return response.send(new AppApiDataResponse({
+          data: userUpdate,
+          message: `User ${userUpdate.first_name} updated.`
+        }))
+      }
+    }catch (error) {
+       next(error)
+    }
   }
 
   static destroy (request: Request, response: Response, next: NextFunction) {
     const id = request.params.id
+    if(!UserPolicy.canDeleteUser(request.user, id)) {
+      return next(new AppException({message: `You are not authorized`, status: 403}))
+    }
     UserRepository.delete(id)
       .then(user => {
         response.json(new AppApiDataResponse({ data: user, message: `User ${id} deleted.` }))
