@@ -45,7 +45,7 @@ export default class UserController extends Controller {
     try {
       const id = request.params.id
       if(!UserPolicy.canShowUser(request.user, id)) {
-        return next(next(new AppException({ message: `You are not authorized`, status: 403})))
+        return next(new AppException({ message: `You are not authorized`, status: 403}))
       }
       const user = await UserRepository.find({ id })
       if(user) {
