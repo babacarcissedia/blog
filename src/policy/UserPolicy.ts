@@ -2,13 +2,7 @@ import {IUser} from "@/model/interfaces";
 
 export default class UserPolicy {
     public static canFetchUsers(user: IUser): Boolean {
-       if(user) {
-           if(user.role === 'ADMIN') {
-               return true
-           }
-           return false
-       }
-       return false
+       return user?.role === 'ADMIN'
     }
 
     public static canShowUser(user: IUser, id: string): Boolean {
