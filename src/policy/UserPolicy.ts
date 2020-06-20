@@ -16,14 +16,7 @@ export default class UserPolicy {
        }
 
        public static canUpdateUser(u: IUser, id: string): Boolean {
-           if(u && u.id === id) {
-               return true
-           } else {
-               if(u.role === 'ADMIN') {
-                   return true
-               }
-               return false
-           }
+           return u?.id === id || u?.role === 'ADMIN'
        }
 
        public static  canDeleteUser(user: IUser, id: string): Boolean {
