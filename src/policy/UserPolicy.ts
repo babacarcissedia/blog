@@ -12,14 +12,7 @@ export default class UserPolicy {
     }
 
     public static canShowUser(user: IUser, id: string): Boolean {
-        if(user && user.id === id) {
-            return true
-        } else {
-            if(user.role === 'ADMIN') {
-                return true
-            }
-            return false
-        }
+        return user?.id == id || user?.role === 'ADMIN'
        }
 
        public static canUpdateUser(u: IUser, id: string): Boolean {
