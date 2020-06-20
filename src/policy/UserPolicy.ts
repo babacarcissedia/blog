@@ -27,9 +27,6 @@ export default class UserPolicy {
        }
 
        public static  canDeleteUser(user: IUser, id: string): Boolean {
-           if(user && user.role === 'ADMIN') {
-               return true
-           }
-           return false
+           return user?.role === 'ADMIN'
        }
 }
