@@ -71,7 +71,7 @@ export default class UserController extends Controller {
         }
       })
       if (valid.fails()) {
-        throw new ValidationException({ data: valid.getErrors() })
+        return next(new ValidationException({ data: valid.getErrors() }))
       }
       const userUpdate = await UserRepository.update(id, data)
       if(userUpdate) {
