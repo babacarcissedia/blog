@@ -48,9 +48,7 @@ export default class UserController extends Controller {
         return next(new AppException({ message: `You are not authorized`, status: 403}))
       }
       const user = await UserRepository.find({ id })
-      if(user) {
-        return response.json(new AppApiDataResponse({ data: user }))
-      }
+      response.json(new AppApiDataResponse({ data: user }))
     } catch (error) {
        next(error)
     }
@@ -74,12 +72,10 @@ export default class UserController extends Controller {
         return next(new ValidationException({ data: valid.getErrors() }))
       }
       const userUpdate = await UserRepository.update(id, data)
-      if(userUpdate) {
-        return response.send(new AppApiDataResponse({
+      response.send(new AppApiDataResponse({
           data: userUpdate,
           message: `User ${userUpdate.first_name} updated.`
         }))
-      }
     }catch (error) {
        next(error)
     }
