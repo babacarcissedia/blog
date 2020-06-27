@@ -16,7 +16,7 @@ userSchema.set('toJSON', {
       ...rest, id: _id
     }
   }
-});
+})
 
 const FILLABLE = ['first_name', 'last_name', 'email']
 

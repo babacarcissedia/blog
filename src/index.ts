@@ -1,5 +1,5 @@
-import 'module-alias/register';
-import Database from "@/Database";
+import 'module-alias/register'
+import Database from '@/Database'
 import { PORT } from './config'
 import Server from './Server'
 

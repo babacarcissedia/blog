@@ -1,11 +1,10 @@
-import Server from '../src/Server'
 import Database from "../src/Database";
+import Server from '../src/Server'
 
-export function setup (database) {
-  const server = new Server(9999, database)
-  return server.start()
+export function getServer (database): Server {
+  return new Server(9999, database)
 }
 
-export function startDatabase () {
+export function getDatabase () {
   return new Database()
 }

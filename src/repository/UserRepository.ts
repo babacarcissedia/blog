@@ -1,8 +1,7 @@
 import AppException from '@/exception/AppException'
-import { hash } from "@/helper/app.helpers";
+import { hash } from '@/helper/app.helpers'
 import { IUser } from '@/model/interfaces'
 import User from '@/model/User'
-
 
 export default class UserRepository {
   static findAll (query: {[key: string]: string} = {}): Promise<IUser[]> {

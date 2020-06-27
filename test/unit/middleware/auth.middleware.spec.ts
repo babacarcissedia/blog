@@ -3,12 +3,12 @@ import { NextFunction, Request, Response } from "express";
 import { mock } from 'jest-mock-extended'
 import 'module-alias/register';
 import UserFactory from "@/factory/UserFactory";
-import { startDatabase } from "../../testCase";
+import { getDatabase } from "../../testCase";
 
 describe.skip('auth.middleware', () => {
   let database
   beforeAll(async () => {
-    database = startDatabase()
+    database = getDatabase()
     await database.connect()
     console.log('mongo. connected')
   })

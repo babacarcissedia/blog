@@ -1,12 +1,12 @@
 import UserFactory from "@/factory/UserFactory";
 import UserRepository from "@/repository/UserRepository";
 import { hashCompare } from "../../../src/helper/app.helpers";
-import { startDatabase } from "../../testCase";
+import { getDatabase } from "../../testCase";
 
 describe.skip('UserRepository', () => {
   let database
   beforeAll(async () => {
-    database = startDatabase()
+    database = getDatabase()
     await database.connect()
   })
 
