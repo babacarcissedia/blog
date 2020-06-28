@@ -72,13 +72,13 @@ export default class UserRepository {
         return reject(new Error('[UserRepository::update] No key value pair given to update'))
       }
       User.findByIdAndUpdate(id, data, { new: false })
-        .then((user: any) => {
+        .then((user) => {
           if (!user) {
             throw new AppException({
               message: `Error while updating user ${id}`
             })
           }
-          resolve(user)
+          resolve(Object.assign({}, user, data))
         })
         .catch((error: Error) => reject(error))
     })

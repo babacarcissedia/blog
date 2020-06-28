@@ -1,51 +1,53 @@
+import AppException from '@/exception/AppException'
 import AuthorizationException from '@/exception/AuthorizationException'
-import { UserRole } from '@/model/interfaces'
-import { NextFunction, Request, Response } from 'express'
-import pick from 'lodash/pick'
 import ValidationException from '@/exception/ValidationException'
-import { RULES } from '@/model/User'
+import { EDIT_RULES, RULES } from '@/model/User'
+import UserPolicy from '@/policy/UserPolicy'
 import UserRepository from '@/repository/UserRepository'
 import AppApiDataResponse from '@/response/AppApiDataResponse'
 import Validator from '@bcdbuddy/validator'
+import { NextFunction, Request, Response } from 'express'
+import pick from 'lodash/pick'
 import Controller from './Controller'
-import AppException from '@/exception/AppException'
-import UserPolicy from '@/policy/UserPolicy'
 
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
-    const data = pick(request.body, ['first_name', 'last_name', 'email', 'password', 'role'])
-    // TODO: pick
-    const v = await Validator.make({
-      data,
-      rules: RULES,
-      models: {
-        Users: UserRepository
-      }
-    })
-    if (v.fails()) {
-      throw new ValidationException({ data: v.getErrors() })
-    }
-    UserRepository.add(data)
-      .then(user => {
-        response.json(new AppApiDataResponse({ data: user, message: `User ${user.first_name} created.` }))
+    try {
+      const data = pick(request.body, ['first_name', 'last_name', 'email', 'password', 'role'])
+      const v = await Validator.make({
+        data,
+        rules: RULES,
+        models: {
+          Users: UserRepository
+        }
       })
-      .catch(error => next(error))
+      if (v.fails()) {
+        throw new ValidationException({ data: v.getErrors() })
+      }
+      const user = await UserRepository.add(data)
+      response.json(new AppApiDataResponse({ data: user, message: `User ${user.first_name} created.` }))
+    } catch (error) {
+      next(error)
+    }
   }
 
-  static index (request: Request, response: Response, next: NextFunction) {
-    if (!UserPolicy.canFetchUsers(request.user)) {
-      return next(new AppException({ message: 'You are not authorized', status: 403 }))
+  static async index (request: Request, response: Response, next: NextFunction) {
+    try {
+      if (!UserPolicy.canFetchUsers(request.user)) {
+        throw new AppException({ message: 'You are not authorized', status: 403 })
+      }
+      const users = await UserRepository.findAll()
+      response.json(new AppApiDataResponse({ data: users }))
+    } catch (error) {
+      next(error)
     }
-    UserRepository.findAll()
-      .then(users => response.json(new AppApiDataResponse({ data: users })))
-      .catch(error => next(error))
   }
 
   static async show (request: Request, response: Response, next: NextFunction) {
     try {
       const id = request.params.id
       if (!UserPolicy.canShowUser(request.user, id)) {
-        return next(new AppException({ message: 'You are not authorized', status: 403 }))
+        throw new AppException({ message: 'You are not authorized', status: 403 })
       }
       const user = await UserRepository.find({ id })
       response.json(new AppApiDataResponse({ data: user }))
@@ -56,40 +58,41 @@ export default class UserController extends Controller {
 
   static async update (request: Request, response: Response, next: NextFunction) {
     const id = request.params.id
-    const data = pick(request.body, ['first_name', 'last_name', 'email', 'password'])
+    const data = pick(request.body, ['first_name', 'last_name', 'email'])
     try {
       if (!UserPolicy.canUpdateUser(request.user, id)) {
-        return next(new AuthorizationException())
+        throw new AuthorizationException()
       }
-      const valid = await Validator.make({
+      const v = await Validator.make({
         data,
-        rules: RULES,
+        rules: EDIT_RULES,
         models: {
           Users: UserRepository
         }
       })
-      if (valid.fails()) {
-        return next(new ValidationException({ data: valid.getErrors() }))
+      if (v.fails()) {
+        throw new ValidationException({ data: v.getErrors() })
       }
-      const userUpdate = await UserRepository.update(id, data)
-      response.send(new AppApiDataResponse({
-        data: userUpdate,
-        message: `User ${userUpdate.first_name} updated.`
+      const user = await UserRepository.update(id, data)
+      response.json(new AppApiDataResponse({
+        data: user,
+        message: `User ${user.first_name} updated.`
       }))
     } catch (error) {
       next(error)
     }
   }
 
-  static destroy (request: Request, response: Response, next: NextFunction) {
+  static async destroy (request: Request, response: Response, next: NextFunction) {
     const id = request.params.id
-    if (!UserPolicy.canDeleteUser(request.user, id)) {
-      return next(new AppException({ message: 'You are not authorized', status: 403 }))
+    try {
+      if (!UserPolicy.canDeleteUser(request.user, id)) {
+        throw new AppException({ message: 'You are not authorized', status: 403 })
+      }
+      const user = await UserRepository.delete(id)
+      response.json(new AppApiDataResponse({ data: user, message: `User ${id} deleted.` }))
+    } catch (error) {
+      next(error)
     }
-    UserRepository.delete(id)
-      .then(user => {
-        response.json(new AppApiDataResponse({ data: user, message: `User ${id} deleted.` }))
-      })
-      .catch((error) => next(error))
   }
 }

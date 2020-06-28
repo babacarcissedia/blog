@@ -26,8 +26,13 @@ export const RULES = {
   first_name: 'required',
   last_name: 'required',
   email: ['required', 'unique:Users'],
-  password: 'required|confirmed',
-  token: 'required'
+  password: ['required', 'confirmed']
+}
+
+export const EDIT_RULES = {
+  first_name: 'required',
+  last_name: 'required',
+  email: ['required', 'unique:Users']
 }
 
 export default User
