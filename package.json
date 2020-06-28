@@ -15,8 +15,8 @@
     "test": "cross-env NODE_ENV=test jest -i --detectOpenHandles",
     "test:unit": "yarn test unit",
     "test:coverage": "yarn test --coverage=true",
-    "lint": "eslint --ext .ts ./src",
-    "lint:fix": "eslint --ext .ts ./src --fix"
+    "lint": "eslint --ext .ts ./src --ignore-path ./src/types.d.ts",
+    "lint:fix": "yarn lint --fix"
   },
   "author": "Babacar Cissé DIA <bcdbuddy@outlook.com>",
   "license": "ISC",

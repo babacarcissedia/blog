@@ -1,8 +1,7 @@
 import AppException from '@/exception/AppException'
-import { hash } from "@/helper/app.helpers";
+import { hash } from '@/helper/app.helpers'
 import { IUser } from '@/model/interfaces'
 import User from '@/model/User'
-
 
 export default class UserRepository {
   static findAll (query: {[key: string]: string} = {}): Promise<IUser[]> {
@@ -73,13 +72,13 @@ export default class UserRepository {
         return reject(new Error('[UserRepository::update] No key value pair given to update'))
       }
       User.findByIdAndUpdate(id, data, { new: false })
-        .then((user: any) => {
+        .then((user) => {
           if (!user) {
             throw new AppException({
               message: `Error while updating user ${id}`
             })
           }
-          resolve(user)
+          resolve(Object.assign({}, user, data))
         })
         .catch((error: Error) => reject(error))
     })

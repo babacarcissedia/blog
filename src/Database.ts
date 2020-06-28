@@ -3,8 +3,8 @@ import { IN_TEST, MONGO_URI } from './config'
 import UserRepository from './repository/UserRepository'
 
 export default class Database {
-  private options;
-  private onCloseListeners: (() => void)[] = [];
+  private readonly options
+  private readonly onCloseListeners: Array<() => void> = []
 
   constructor (options = {}) {
     this.options = Object.assign({}, options)
@@ -27,12 +27,13 @@ export default class Database {
       mongoose.set('useUnifiedTopology', true)
       try {
         console.log('trying to connect with uri %s', uri)
-        await mongoose.connect(`${uri}`, {
+        const connection = await mongoose.connect(`${uri}`, {
           useNewUrlParser: true,
           useUnifiedTopology: true,
           useCreateIndex: true
         })
         console.log(`MongoDB successfully connected to ${uri}`)
+        resolve(connection)
       } catch (e) {
         mongoose.connection.on('error', error => {
           reject(error)
