@@ -9,11 +9,15 @@ import Validator from '@bcdbuddy/validator'
 import { NextFunction, Request, Response } from 'express'
 import pick from 'lodash/pick'
 import Controller from './Controller'
+import {hash, hashCompare} from "@/helper/app.helpers";
+import has = Reflect.has;
+import User from "@/model/User";
+
 
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
     try {
-      const data = pick(request.body, ['first_name', 'last_name', 'email', 'password', 'role'])
+      const data = pick(request.body, ['first_name', 'last_name', 'email', 'password','password_confirmation', 'token','role'])
       const v = await Validator.make({
         data,
         rules: RULES,
@@ -24,6 +28,7 @@ export default class UserController extends Controller {
       if (v.fails()) {
         throw new ValidationException({ data: v.getErrors() })
       }
+      data.password = await hash(data.password)
       const user = await UserRepository.add(data)
       response.json(new AppApiDataResponse({ data: user, message: `User ${user.first_name} created.` }))
     } catch (error) {
@@ -95,4 +100,31 @@ export default class UserController extends Controller {
       next(error)
     }
   }
+
+  static async login (request: Request, response: Response, next: NextFunction) {
+    try {
+      const data = pick(request.body, ['email', 'password'])
+      const valid = await Validator.make({
+        data,
+        rules: {
+          'email': 'required',
+          'password': 'required'
+        }
+      })
+      if (valid.fails()) {
+        throw new ValidationException({ data: valid.getErrors() })
+      }
+      let user = await UserRepository.find({ email: data.email})
+      if(!hashCompare(data.password, user.password)) {
+        throw new AppException({message: 'Password do not match'})
+      }
+      user.token = await hash((Math.random() * 1000000000).toString())
+      const updateUser = new User(user)
+      await updateUser.save()
+      response.json({token: updateUser.token})
+    } catch (error) {
+      next(error)
+    }
+  }
+
 }
