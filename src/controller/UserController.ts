@@ -113,7 +113,7 @@ export default class UserController extends Controller {
       if (valid.fails()) {
         throw new ValidationException({ data: valid.getErrors() })
       }
-      let user = await UserRepository.find({ email: data.email})
+      const user = await UserRepository.find({ email: data.email})
       if(!hashCompare(data.password, user.password)) {
         throw new AppException({message: 'Password do not match'})
       }
