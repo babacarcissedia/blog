@@ -28,7 +28,6 @@ export default class UserController extends Controller {
       if (v.fails()) {
         throw new ValidationException({ data: v.getErrors() })
       }
-      data.password = await hash(data.password)
       const user = await UserRepository.add(data)
       response.json(new AppApiDataResponse({ data: user, message: `User ${user.first_name} created.` }))
     } catch (error) {
