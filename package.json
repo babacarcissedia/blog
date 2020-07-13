@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A simple blog",
   "main": "./src/index.ts",
+  "module": "./src/index.ts",
   "_moduleAliases": {
     "@": "dist/"
   },
