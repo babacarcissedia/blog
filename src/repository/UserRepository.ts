@@ -78,7 +78,7 @@ export default class UserRepository {
               message: `Error while updating user ${id}`
             })
           }
-          resolve(Object.assign({}, user, data))
+          resolve(Object.assign({}, user.toJSON(), data))
         })
         .catch((error: Error) => reject(error))
     })
