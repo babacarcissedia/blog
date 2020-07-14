@@ -118,21 +118,21 @@ export default class UserRepository {
     return new Promise(async (resolve, reject) => {
       data.password = await hash(data.password)
       this.findAll(data)
-          .then(async (users) => {
-            const {0: user} = users
-            if(!user) {
-              throw new AppException({
-                status: 400,
-                message: 'Email and password do not match any account'
-              })
-            }
-            user.token = await hash((Math.random() * 1000000000).toString())
-            const updateUser = await new User(user).save()
-            resolve(updateUser)
-         })
-          .catch((error: Error) => {
-            reject(error)
-          })
+        .then(async (users) => {
+          const {0: user} = users
+          if(!user) {
+            throw new AppException({
+              status: 401,
+              message: 'Email and password do not match any account'
+            })
+          }
+          user.token = await hash(Date.now().toString())
+          const updateUser = await new User(user).save()
+          resolve(updateUser)
+        })
+        .catch((error: Error) => {
+          reject(error)
+        })
     })
   }
 }

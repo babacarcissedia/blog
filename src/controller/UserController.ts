@@ -10,7 +10,6 @@ import { NextFunction, Request, Response } from 'express'
 import pick from 'lodash/pick'
 import Controller from './Controller'
 import {hash, hashCompare} from "@/helper/app.helpers";
-import has = Reflect.has;
 import User from "@/model/User";
 
 
