@@ -113,15 +113,10 @@ export default class UserController extends Controller {
       if (valid.fails()) {
         throw new ValidationException({ data: valid.getErrors() })
       }
-      const user = await UserRepository.find({ email: data.email})
-      if(!hashCompare(data.password, user.password)) {
-        throw new AppException({message: 'Password do not match'})
-      }
-      user.token = await hash((Math.random() * 1000000000).toString())
-      const updateUser = new User(user)
-      await updateUser.save()
-      response.json({token: updateUser.token})
-    } catch (error) {
+      const authUser = await UserRepository.login(data)
+      response.json(new AppApiDataResponse({data: authUser, message: 'Login Success'}))
+    }
+     catch (error) {
       next(error)
     }
   }

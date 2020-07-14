@@ -1,5 +1,5 @@
 import AppException from '@/exception/AppException'
-import { hash } from '@/helper/app.helpers'
+import {hash, hashCompare} from '@/helper/app.helpers'
 import { IUser } from '@/model/interfaces'
 import User from '@/model/User'
 
@@ -111,6 +111,28 @@ export default class UserRepository {
           resolve(result)
         })
         .catch((error: Error) => reject(error))
+    })
+  }
+
+  static login (data) : Promise<IUser> {
+    return new Promise(async (resolve, reject) => {
+      data.password = await hash(data.password)
+      this.findAll(data)
+          .then(async (users) => {
+            const {0: user} = users
+            if(!user) {
+              throw new AppException({
+                status: 400,
+                message: 'Email and password do not match any account'
+              })
+            }
+            user.token = await hash((Math.random() * 1000000000).toString())
+            const updateUser = await new User(user).save()
+            resolve(updateUser)
+         })
+          .catch((error: Error) => {
+            reject(error)
+          })
     })
   }
 }
