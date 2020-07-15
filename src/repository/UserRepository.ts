@@ -116,15 +116,17 @@ export default class UserRepository {
 
   static login (data) : Promise<IUser> {
     return new Promise(async (resolve, reject) => {
-      data.password = await hash(data.password)
-      this.findAll(data)
+      this.findAll({email: data.email})
         .then(async (users) => {
           const {0: user} = users
           if(!user) {
             throw new AppException({
               status: 401,
-              message: 'Email and password do not match any account'
+              message: 'You are not authorized'
             })
+          }
+          if(!await hashCompare(data.password, user.password)) {
+            throw new AppException({message: 'Password do not match any account'})
           }
           user.token = await hash(Date.now().toString())
           const updateUser = await new User(user).save()
