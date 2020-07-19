@@ -120,4 +120,18 @@ export default class UserController extends Controller {
     }
   }
 
+  static async logout (request: Request, response: Response, next: NextFunction) {
+    try {
+      const id = request.params.id
+      if (!UserPolicy.canShowUser(request.user, id)) {
+        throw new AppException({ message: 'You are not authorized', status: 403 })
+      }
+      const user = await UserRepository.logout(id)
+      response.json(new AppApiDataResponse({ data: user }))
+    }
+    catch (error) {
+      next(error)
+    }
+  }
+
 }

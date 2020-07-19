@@ -122,7 +122,7 @@ export default class UserRepository {
           if(!user) {
             throw new AppException({
               status: 401,
-              message: 'Email or Password do not match any account'
+              message: 'You are not authorized'
             })
           }
           if(!await hashCompare(data.password, user.password)) {
@@ -137,25 +137,4 @@ export default class UserRepository {
         })
     })
   }
-
-    static logout (id: string) : Promise<IUser> {
-        return new Promise(async (resolve, reject) => {
-            this.findAll({id: id})
-                .then(async (users) => {
-                    const {0: user} = users
-                    if(!user) {
-                        throw new AppException({
-                            status: 404,
-                            message: 'User not found'
-                        })
-                    }
-                     user.token = ''
-                    const saveUser = await new User(user).save()
-                    resolve(saveUser)
-                })
-                .catch((error: Error) => {
-                    reject(error)
-                })
-        })
-    }
 }
