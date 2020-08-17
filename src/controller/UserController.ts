@@ -14,15 +14,15 @@ export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
     try {
       const data = pick(request.body, ['first_name', 'last_name', 'email', 'password', 'password_confirmation', 'token', 'role'])
-      const v = await Validator.make({
+      const validator = await Validator.make({
         data,
         rules: RULES,
         models: {
           Users: UserRepository
         }
       })
-      if (v.fails()) {
-        throw new ValidationException({ data: v.getErrors() })
+      if (validator.fails()) {
+        throw new ValidationException({ data: validator.getErrors() })
       }
       const user = await UserRepository.add(data)
       response.json(new AppApiDataResponse({ data: user, message: `User ${user.first_name} created.` }))
@@ -127,27 +127,42 @@ export default class UserController extends Controller {
     }
   }
 
-  static async resetPassword (request: Request, response: Response, next: NextFunction) {
-    const id = request.user.id
-    const data = pick(request.body, ['first_name', 'last_name', 'email'])
+  static async forgetPassword (request: Request, response: Response, next: NextFunction) {
     try {
-      if (!UserPolicy.canUpdateUser(request.user, id)) {
-        throw new AuthorizationException()
-      }
-      const v = await Validator.make({
+      const data = pick(request.body, ['email'])
+      const validator = await Validator.make({
         data,
-        rules: EDIT_RULES,
-        models: {
-          Users: UserRepository
+        rules: {
+          'email': 'required',
         }
       })
-      if (v.fails()) {
-        throw new ValidationException({ data: v.getErrors() })
+      if (validator.fails()) {
+        throw new ValidationException({ data: validator.getErrors() })
       }
-      const user = await UserRepository.update(id, data)
+      const user = await UserRepository.forgetPassword(data)
+      response.json(new AppApiDataResponse({data: user}))
+    }
+    catch (error) {
+      next(error)
+    }
+  }
+
+  static async resetPassword (request: Request, response: Response, next: NextFunction) {
+    try {
+      const data = pick(request.body, ['email', 'password'])
+      const validator = await Validator.make({
+        data,
+        rules: {
+          'email': 'required',
+          'password': 'required'
+        }
+      })
+      if (validator.fails()) {
+        throw new ValidationException({ data: validator.getErrors() })
+      }
+      const user = await UserRepository.resetPassword(request.user.id, data)
       response.json(new AppApiDataResponse({
-        data: user,
-        message: `User ${user.first_name} updated.`
+        data: user
       }))
     } catch (error) {
       next(error)

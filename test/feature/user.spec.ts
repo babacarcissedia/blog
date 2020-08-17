@@ -6,7 +6,6 @@ import AppApiResponse from "../../src/response/AppApiResponse";
 import { getServer, getDatabase } from "../testCase";
 
 describe('User', async () => {
-  await testAs({ authuser, targetUser })
   let database
   let app
   let request
@@ -145,6 +144,10 @@ describe('User', async () => {
       await testAs({ authUser, targetUser })
     })
   })
+
+  describe.skip('login()', () => {
+  })
+
+  describe.skip('logout()', () => {
+  })
 })
-describe.skip('login()', () => {})
-describe.skip('logout()', () => {})
