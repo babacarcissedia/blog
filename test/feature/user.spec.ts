@@ -5,7 +5,8 @@ import UserRepository from "../../src/repository/UserRepository";
 import AppApiResponse from "../../src/response/AppApiResponse";
 import { getServer, getDatabase } from "../testCase";
 
-describe('User', () => {
+describe('User', async () => {
+  await testAs({ authuser, targetUser })
   let database
   let app
   let request
@@ -145,3 +146,5 @@ describe('User', () => {
     })
   })
 })
+describe.skip('login()', () => {})
+describe.skip('logout()', () => {})

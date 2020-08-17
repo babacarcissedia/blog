@@ -1,10 +1,10 @@
 import AppException from '@/exception/AppException'
-import {hash, hashCompare} from '@/helper/app.helpers'
+import { hash, hashCompare } from '@/helper/app.helpers'
 import { IUser } from '@/model/interfaces'
 import User from '@/model/User'
 
 export default class UserRepository {
-  static findAll (query: {[key: string]: string} = {}): Promise<IUser[]> {
+  static findAll (query: { [key: string]: string} = {}): Promise<IUser[]> {
     if (query.id) {
       query._id = query.id
       delete query.id
@@ -16,7 +16,7 @@ export default class UserRepository {
     })
   }
 
-  static find (query: {[key: string]: string} = {}): Promise<IUser> {
+  static find (query: { [key: string]: string} = {}): Promise<IUser> {
     return new Promise((resolve, reject) => {
       this.findAll(query)
         .then((users) => {
@@ -115,7 +115,33 @@ export default class UserRepository {
   }
 
   static login (data) : Promise<IUser> {
-    return new Promise(async (resolve, reject) => {
+      return new Promise( async(resolve, reject) => {
+          try {
+              const errorMessage = 'Email or Password do not match any account'
+              const users = await this.findAll({ email: data.email})
+              const {0: user} = users
+              if(!user) {
+                  throw new AppException({
+                      status: 401,
+                      message: errorMessage
+                  })
+              }
+              if(!await hashCompare(data.password, user.password)) {
+                  throw new AppException({
+                      status: 401,
+                      message: errorMessage
+                  })
+              }
+              const updateUser = UserRepository.update(user.id, {
+                  token: await hash(Date.now().toString())
+              })
+              resolve(updateUser)
+          }catch (error) {
+              reject(error)
+
+          }
+      })
+    /*return new Promise(async (resolve, reject) => {
       this.findAll({email: data.email})
         .then(async (users) => {
           const {0: user} = users
@@ -135,12 +161,19 @@ export default class UserRepository {
         .catch((error: Error) => {
           reject(error)
         })
-    })
+    })*/
   }
-
-    static logout (id: string) : Promise<IUser> {
+  static logout (id: string) : Promise<IUser> {
         return new Promise(async (resolve, reject) => {
-            this.findAll({id: id})
+            try {
+                const user = await UserRepository.update(id, {
+                    token: null
+                })
+                resolve(user)
+            }catch (error) {
+                reject(error)
+            }
+           /* this.findAll({id: id})
                 .then(async (users) => {
                     const {0: user} = users
                     if(!user) {
@@ -152,6 +185,32 @@ export default class UserRepository {
                      user.token = ''
                     const saveUser = await new User(user).save()
                     resolve(saveUser)
+                })
+                .catch((error: Error) => {
+                    reject(error)
+                })*/
+        })
+    }
+  static async resetPassword (data) : Promise<IUser> {
+       return new Promise((resolve, reject) => {
+
+
+       })
+    }
+    static forgetPassword (data) : Promise<IUser> {
+        return new Promise(async (resolve, reject) => {
+            this.findAll({email: data.email})
+                .then(async (users) => {
+                    const {0: user} = users
+                    if(!user) {
+                        throw new AppException({
+                            status: 401,
+                            message: 'Email do not match any account'
+                        })
+                    }
+                    user.token = await hash(Date.now().toString())
+                    const updateUser = await new User(user).save()
+                    resolve(updateUser)
                 })
                 .catch((error: Error) => {
                     reject(error)

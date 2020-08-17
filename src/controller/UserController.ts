@@ -9,14 +9,11 @@ import Validator from '@bcdbuddy/validator'
 import { NextFunction, Request, Response } from 'express'
 import pick from 'lodash/pick'
 import Controller from './Controller'
-import {hash, hashCompare} from "@/helper/app.helpers";
-import User from "@/model/User";
-
 
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
     try {
-      const data = pick(request.body, ['first_name', 'last_name', 'email', 'password','password_confirmation', 'token','role'])
+      const data = pick(request.body, ['first_name', 'last_name', 'email', 'password', 'password_confirmation', 'token', 'role'])
       const v = await Validator.make({
         data,
         rules: RULES,
@@ -102,18 +99,18 @@ export default class UserController extends Controller {
   static async login (request: Request, response: Response, next: NextFunction) {
     try {
       const data = pick(request.body, ['email', 'password'])
-      const valid = await Validator.make({
+      const validator = await Validator.make({
         data,
         rules: {
           'email': 'required',
           'password': 'required'
         }
       })
-      if (valid.fails()) {
-        throw new ValidationException({ data: valid.getErrors() })
+      if (validator.fails()) {
+        throw new ValidationException({ data: validator.getErrors() })
       }
       const authUser = await UserRepository.login(data)
-      response.json(new AppApiDataResponse({data: authUser, message: 'Login Success'}))
+      response.json(new AppApiDataResponse({data: authUser, message: `Welcome ${data.email}. `}))
     }
      catch (error) {
       next(error)
@@ -122,14 +119,37 @@ export default class UserController extends Controller {
 
   static async logout (request: Request, response: Response, next: NextFunction) {
     try {
-      const id = request.params.id
-      if (!UserPolicy.canShowUser(request.user, id)) {
-        throw new AppException({ message: 'You are not authorized', status: 403 })
-      }
-      const user = await UserRepository.logout(id)
-      response.json(new AppApiDataResponse({ data: user }))
+      const user = await UserRepository.logout(request.user.id)
+      response.json(new AppApiDataResponse({ data: user, message: 'See you soon ' }))
     }
     catch (error) {
+      next(error)
+    }
+  }
+
+  static async resetPassword (request: Request, response: Response, next: NextFunction) {
+    const id = request.user.id
+    const data = pick(request.body, ['first_name', 'last_name', 'email'])
+    try {
+      if (!UserPolicy.canUpdateUser(request.user, id)) {
+        throw new AuthorizationException()
+      }
+      const v = await Validator.make({
+        data,
+        rules: EDIT_RULES,
+        models: {
+          Users: UserRepository
+        }
+      })
+      if (v.fails()) {
+        throw new ValidationException({ data: v.getErrors() })
+      }
+      const user = await UserRepository.update(id, data)
+      response.json(new AppApiDataResponse({
+        data: user,
+        message: `User ${user.first_name} updated.`
+      }))
+    } catch (error) {
       next(error)
     }
   }
