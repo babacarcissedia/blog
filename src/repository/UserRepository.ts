@@ -114,78 +114,77 @@ export default class UserRepository {
     })
   }
 
-  static login (data) : Promise<IUser> {
-      return new Promise( async (resolve, reject) => {
-          try {
-              const errorMessage = 'Email or Password do not match any account'
-              const users = await this.findAll({ email: data.email})
-              const {0: user} = users
-              if(!user) {
-                  throw new AppException({
-                      status: 401,
-                      message: errorMessage
-                  })
-              }
-              if(!await hashCompare(data.password, user.password)) {
-                  throw new AppException({
-                       status: 401,
-                      message: errorMessage
-                  })
-              }
-              const updateUser = UserRepository.update(user.id, {
-                  token: await hash(Date.now().toString())
-              })
-              resolve(updateUser)
-          }catch (error) {
-              reject(error)
-
-          }
-      })
+  static login (data): Promise<IUser> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const errorMessage = 'Email or Password do not match any account'
+        const users = await this.findAll({ email: data.email })
+        const { 0: user } = users
+        if (!user) {
+          throw new AppException({
+            status: 401,
+            message: errorMessage
+          })
+        }
+        if (!await hashCompare(data.password, user.password)) {
+          throw new AppException({
+            status: 401,
+            message: errorMessage
+          })
+        }
+        const updateUser = UserRepository.update(user.id, {
+          token: await hash(Date.now().toString())
+        })
+        resolve(updateUser)
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
-  static logout (id: string) : Promise<IUser> {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const user = await UserRepository.update(id, {
-                    token: null
-                })
-                resolve(user)
-            } catch (error) {
-                reject(error)
-            }
-        })
-    }
-  static async resetPassword (id: string, data) : Promise<IUser> {
-       return new Promise(async (resolve, reject) => {
-          try {
-              const updateUser = await UserRepository.update(id, {
-                  password: await hash(data.password)
-              })
-              resolve(updateUser)
-          } catch (error) {
-              reject(error)
-          }
 
-       })
-    }
-    static forgetPassword (data) : Promise<IUser> {
-        return new Promise(async (resolve, reject) => {
-            this.findAll({email: data.email})
-                .then(async (users) => {
-                    const {0: user} = users
-                    if(!user) {
-                        throw new AppException({
-                            status: 401,
-                            message: 'Email do not match any account'
-                        })
-                    }
-                    const updateUser = await UserRepository.update(user.id, {
-                        token: await hash(Date.now().toString())
-                    })
-                    resolve(updateUser)
-                })
-                .catch((error: Error) => {
-                    reject(error)
-                })
+  static logout (id: string): Promise<IUser> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const user = await UserRepository.update(id, {
+          token: null
         })
-    }
+        resolve(user)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  static async resetPassword (id: string, data): Promise<IUser> {
+    return await new Promise(async (resolve, reject) => {
+      try {
+        const updateUser = await UserRepository.update(id, {
+          password: await hash(data.password)
+        })
+        resolve(updateUser)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  static RequestPasswordReset (email: string): Promise<IUser> {
+    return new Promise(async (resolve, reject) => {
+      this.findAll({ email: email })
+        .then(async (users) => {
+          const { 0: user } = users
+          if (!user) {
+            throw new AppException({
+              status: 401,
+              message: 'Email do not match any account'
+            })
+          }
+          user.token = await hash(Date.now().toString())
+          resolve(user)
+        })
+        .catch((error: Error) => {
+          reject(error)
+        })
+    })
+  }
 }

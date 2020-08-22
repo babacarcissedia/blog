@@ -102,17 +102,16 @@ export default class UserController extends Controller {
       const validator = await Validator.make({
         data,
         rules: {
-          'email': 'required',
-          'password': 'required'
+          email: 'required',
+          password: 'required'
         }
       })
       if (validator.fails()) {
         throw new ValidationException({ data: validator.getErrors() })
       }
       const authUser = await UserRepository.login(data)
-      response.json(new AppApiDataResponse({data: authUser, message: `Welcome ${data.email}. `}))
-    }
-     catch (error) {
+      response.json(new AppApiDataResponse({ data: authUser, message: `Welcome ${data.email}. ` }))
+    } catch (error) {
       next(error)
     }
   }
@@ -121,46 +120,49 @@ export default class UserController extends Controller {
     try {
       const user = await UserRepository.logout(request.user.id)
       response.json(new AppApiDataResponse({ data: user, message: 'See you soon ' }))
-    }
-    catch (error) {
+    } catch (error) {
       next(error)
     }
   }
 
   static async forgetPassword (request: Request, response: Response, next: NextFunction) {
     try {
-      const data = pick(request.body, ['email'])
+      const data = request.body.email
       const validator = await Validator.make({
         data,
         rules: {
-          'email': 'required',
+          email: 'required'
         }
       })
       if (validator.fails()) {
         throw new ValidationException({ data: validator.getErrors() })
       }
-      const user = await UserRepository.forgetPassword(data)
-      response.json(new AppApiDataResponse({data: user}))
-    }
-    catch (error) {
+      const user = await UserRepository.RequestPasswordReset(data)
+      response.json(new AppApiDataResponse({ data: user }))
+    } catch (error) {
       next(error)
     }
   }
 
   static async resetPassword (request: Request, response: Response, next: NextFunction) {
     try {
-      const data = pick(request.body, ['email', 'password'])
+      const id = request.user.id
+      const data = pick(request.body, ['email', 'password', 'password_confirmation'])
       const validator = await Validator.make({
         data,
         rules: {
-          'email': 'required',
-          'password': 'required'
+          email: 'required',
+          password: 'required|confirmed'
         }
       })
       if (validator.fails()) {
         throw new ValidationException({ data: validator.getErrors() })
       }
-      const user = await UserRepository.resetPassword(request.user.id, data)
+      const users = await UserRepository.findAll({email: data.email})
+      if(!UserPolicy.canResetPassword(users[0], id)) {
+        throw new AppException({ message: 'You are not authorized', status: 403 })
+      }
+      const user = await UserRepository.resetPassword(id, data)
       response.json(new AppApiDataResponse({
         data: user
       }))
@@ -168,5 +170,4 @@ export default class UserController extends Controller {
       next(error)
     }
   }
-
 }

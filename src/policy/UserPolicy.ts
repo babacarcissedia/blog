@@ -13,8 +13,11 @@ export default class UserPolicy {
     return u.id === id || u.role === 'ADMIN'
   }
 
+  public static canResetPassword (u: IUser, id: string): Boolean {
+    return u.id === id
+  }
+
   public static canDeleteUser (user: IUser, id: string): Boolean {
     return user.role === 'ADMIN'
   }
-
 }
