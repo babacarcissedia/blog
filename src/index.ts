@@ -6,5 +6,5 @@ import Server from './Server'
 (async () => {
   const database = new Database()
   const server = new Server(PORT, database)
-  server.start()
+  await server.start()
 })()

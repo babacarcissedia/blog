@@ -9,3 +9,9 @@ export const IN_PRODUCTION = NODE_ENV === 'production'
 export const IN_DEVELOPMENT = NODE_ENV === 'development'
 export const MONGO_URI = String(process.env.MONGO_URI)
 export const PORT = Number(process.env.PORT ?? 4000)
+
+export const APP_NAME = process.env.APP_NAME
+export const APP_URL = process.env.APP_URL
+
+
+export * from './mail'

@@ -30,3 +30,20 @@ export interface IComment extends Document {
   user: string // user id
   post: string // post id
 }
+
+export interface IPasswordRequest extends Document {
+  user: string,
+  token: string,
+  expired_at: string
+}
+
+
+export interface ISender {
+  name: string,
+  host: string,
+  port: number,
+  ccs?: string[],
+  login: string,
+  password: string,
+  secured?: boolean
+}

@@ -7,6 +7,7 @@ import errorMiddleware from './middleware/error.middleware'
 import requestLoggerMiddleware from './middleware/request.logger.middleware'
 import postRoutes from './routes/postRoutes'
 import userRoutes from './routes/userRoutes'
+import passwordRoutes from '@/routes/passwordRoutes'
 
 export default class Server {
   private readonly port: number
@@ -32,6 +33,7 @@ export default class Server {
         // routes
         app.use('/user', userRoutes)
         app.use('/post', postRoutes)
+        app.use('/password', passwordRoutes)
 
         // *** THIS MIDDLEWARE SHOULD ALWAYS BE CALLED AT LAST ***
         app.use(errorMiddleware)

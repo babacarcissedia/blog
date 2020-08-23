@@ -2,8 +2,9 @@ import AppException from '@/exception/AppException'
 import { hash, hashCompare } from '@/helper/app.helpers'
 import { IUser } from '@/model/interfaces'
 import User from '@/model/User'
+import Repository from "@/repository/Repository";
 
-export default class UserRepository {
+export default class UserRepository extends Repository {
   static findAll (query: { [key: string]: string} = {}): Promise<IUser[]> {
     if (query.id) {
       query._id = query.id
@@ -155,36 +156,16 @@ export default class UserRepository {
     })
   }
 
-  static async resetPassword (id: string, data): Promise<IUser> {
-    return await new Promise(async (resolve, reject) => {
+  static reset (id: string, data): Promise<IUser> {
+    return new Promise(async (resolve, reject) => {
       try {
-        const updateUser = await UserRepository.update(id, {
+        const user = await UserRepository.update(id, {
           password: await hash(data.password)
         })
-        resolve(updateUser)
+        resolve(user)
       } catch (error) {
         reject(error)
       }
-    })
-  }
-
-  static RequestPasswordReset (email: string): Promise<IUser> {
-    return new Promise(async (resolve, reject) => {
-      this.findAll({ email: email })
-        .then(async (users) => {
-          const { 0: user } = users
-          if (!user) {
-            throw new AppException({
-              status: 401,
-              message: 'Email do not match any account'
-            })
-          }
-          user.token = await hash(Date.now().toString())
-          resolve(user)
-        })
-        .catch((error: Error) => {
-          reject(error)
-        })
     })
   }
 }

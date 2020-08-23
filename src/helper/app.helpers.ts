@@ -54,7 +54,7 @@ export function range (min, max): Number[] {
   return Array.from(_range(min, max))
 }
 
-export function hash (password: string): Promise<string> {
+export function hash (password: string | number): Promise<string> {
   return bcrypt.hash(password, 12)
 }
 
