@@ -1,10 +1,11 @@
 import AppException from '@/exception/AppException'
-import { hash } from '@/helper/app.helpers'
+import { hash, hashCompare } from '@/helper/app.helpers'
 import { IUser } from '@/model/interfaces'
 import User from '@/model/User'
+import Repository from "@/repository/Repository";
 
-export default class UserRepository {
-  static findAll (query: {[key: string]: string} = {}): Promise<IUser[]> {
+export default class UserRepository extends Repository {
+  static findAll (query: { [key: string]: string} = {}): Promise<IUser[]> {
     if (query.id) {
       query._id = query.id
       delete query.id
@@ -16,7 +17,7 @@ export default class UserRepository {
     })
   }
 
-  static find (query: {[key: string]: string} = {}): Promise<IUser> {
+  static find (query: { [key: string]: string} = {}): Promise<IUser> {
     return new Promise((resolve, reject) => {
       this.findAll(query)
         .then((users) => {
@@ -111,6 +112,60 @@ export default class UserRepository {
           resolve(result)
         })
         .catch((error: Error) => reject(error))
+    })
+  }
+
+  static login (data): Promise<IUser> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const errorMessage = 'Email or Password do not match any account'
+        const users = await this.findAll({ email: data.email })
+        const { 0: user } = users
+        if (!user) {
+          throw new AppException({
+            status: 401,
+            message: errorMessage
+          })
+        }
+        if (!await hashCompare(data.password, user.password)) {
+          throw new AppException({
+            status: 401,
+            message: errorMessage
+          })
+        }
+        const updateUser = UserRepository.update(user.id, {
+          token: await hash(Date.now().toString())
+        })
+        resolve(updateUser)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  static logout (id: string): Promise<IUser> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const user = await UserRepository.update(id, {
+          token: null
+        })
+        resolve(user)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  static reset (id: string, data): Promise<IUser> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const user = await UserRepository.update(id, {
+          password: await hash(data.password)
+        })
+        resolve(user)
+      } catch (error) {
+        reject(error)
+      }
     })
   }
 }

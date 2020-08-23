@@ -13,16 +13,16 @@ import Controller from './Controller'
 export default class UserController extends Controller {
   static async store (request: Request, response: Response, next: NextFunction) {
     try {
-      const data = pick(request.body, ['first_name', 'last_name', 'email', 'password', 'role'])
-      const v = await Validator.make({
+      const data = pick(request.body, ['first_name', 'last_name', 'email', 'password', 'password_confirmation', 'token', 'role'])
+      const validator = await Validator.make({
         data,
         rules: RULES,
         models: {
           Users: UserRepository
         }
       })
-      if (v.fails()) {
-        throw new ValidationException({ data: v.getErrors() })
+      if (validator.fails()) {
+        throw new ValidationException({ data: validator.getErrors() })
       }
       const user = await UserRepository.add(data)
       response.json(new AppApiDataResponse({ data: user, message: `User ${user.first_name} created.` }))
@@ -91,6 +91,35 @@ export default class UserController extends Controller {
       }
       const user = await UserRepository.delete(id)
       response.json(new AppApiDataResponse({ data: user, message: `User ${id} deleted.` }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  static async login (request: Request, response: Response, next: NextFunction) {
+    try {
+      const data = pick(request.body, ['email', 'password'])
+      const validator = await Validator.make({
+        data,
+        rules: {
+          email: 'required',
+          password: 'required'
+        }
+      })
+      if (validator.fails()) {
+        throw new ValidationException({ data: validator.getErrors() })
+      }
+      const authUser = await UserRepository.login(data)
+      response.json(new AppApiDataResponse({ data: authUser, message: `Welcome ${data.email}. ` }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  static async logout (request: Request, response: Response, next: NextFunction) {
+    try {
+      const user = await UserRepository.logout(request.user.id)
+      response.json(new AppApiDataResponse({ data: user, message: 'See you soon ' }))
     } catch (error) {
       next(error)
     }
